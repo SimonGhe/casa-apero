@@ -1,5 +1,53 @@
 # Phase 4 — secure admin preview, locally prepared
 
+## Approved deployment — 24 October 2026
+
+The owner subsequently approved deployment and supplied a dashboard screenshot
+and application export. The export maps `admin.casa-apero.com` to policy
+`2360ca87-09fc-4617-89d7-f19babdb29ca`; the screenshot shows **Casa Apero Admins**,
+Allow, the owner-approved email and that admin application. The owner confirmed
+One-time PIN and the private issuer/AUD. An Access API permission failure was
+not treated as evidence that the application was absent.
+
+Deployed URL: **https://admin.casa-apero.com**
+
+- Worker: `casa-apero-admin-staging`
+- Version: `fd252238-d4e6-45d2-b38f-ec8803e38f35`
+- Isolated D1: `casa-apero-admin-staging`, UUID
+  `f8c58abc-95ab-4fd9-8279-5f0f0f2ada83`, verified `jurisdiction=eu`
+- Applied migrations: 0001, 0002, 0003; fictional seed only
+- Verified dataset: one fictional order, zero non-fictional orders, four products,
+  correct preview marker, ordering paused
+- ADMIN_WRITES_ENABLED=false, CHECKOUT_ENABLED=false, Access-only authentication
+- workers.dev=false and preview URLs=false confirmed through deployed metadata
+
+Deployment checks: root and anonymous admin API requests returned HTTP 302 to
+the exact configured Access issuer, with the expected AUD in the login redirect.
+The Worker workers.dev URL and version-preview URL returned 404. Public storefront
+deployment/settings matched the saved pre-deployment baseline exactly; its custom
+domain remained unchanged, homepage returned 200, test banner remained present,
+and an empty order POST returned 403. Production D1 was not bound, queried or
+modified. No Git push, main-branch modification or paid service was introduced.
+
+Validation repeated before deployment: 52 unit/integration tests, TypeScript and
+preview build, compiled workerd/JWT verification, two desktop/mobile preview
+browser tests and dependency audit passed. Those local JWT tests are not a
+replacement for an actual authenticated online login.
+
+**Actual OTP login and authenticated online API verification are PENDING.**
+The user requested a handoff immediately after deployment. Keep the preview
+read-only, have the owner enter the OTP in their own browser, and verify the
+session API returns the expected identity, local=false, preview=true and
+writesEnabled=false before accepting the online authentication result. Do not
+ask for PINs, cookies or JWTs in chat. Unauthorized-identity and expiry checks
+against the live Access path are also not yet claimed as passed.
+
+The local preparation notes below describe the earlier approval state and are
+retained as implementation history; this deployment record supersedes their
+statements that deployment was not authorized or performed.
+
+## Earlier local preparation record
+
 Prepared on `develop`. **No deployment or Cloudflare resource mutation is authorized
 or performed in this phase.** The public storefront remains in test mode and its
 API still rejects all order requests. Production D1 is not connected or queried.

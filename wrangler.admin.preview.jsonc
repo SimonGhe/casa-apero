@@ -12,8 +12,8 @@
   "CHECKOUT_ENABLED":"false","ADMIN_PREVIEW_DATASET":"casa-apero-admin-staging-fictional-v1",
   "ACCESS_ISSUER":"","ACCESS_AUDIENCE":"","ADMIN_EMAIL_ALLOWLIST":""
  },
- // This is a deliberate unprovisioned placeholder, not the production database.
- // Replace only after approval to create the separate EU staging database.
+ // Isolated EU database created with explicit admin-preview deployment approval.
+ // Fictional data only. Never substitute the production database.
  "d1_databases":[{"binding":"DB","database_name":"casa-apero-admin-staging",
-  "database_id":"00000000-0000-0000-0000-000000000004","remote":false,"migrations_dir":"migrations"}]
+  "database_id":"f8c58abc-95ab-4fd9-8279-5f0f0f2ada83","remote":false,"migrations_dir":"migrations"}]
 }

@@ -1,10 +1,12 @@
 # Casa Apero
 
-Phase 4 admin preview is **prepared locally, not deployed**. Its separate Worker,
-fictional dataset, strict Access-only build and local signed-fixture verification
+Phase 4 admin preview is deployed read-only at **https://admin.casa-apero.com**,
+behind Cloudflare Access, with a separate EU fictional-data D1. Actual browser
+OTP login and authenticated online API verification are still **pending**.
+Its deployment record, strict Access-only build and local signed-fixture verification
 are documented in [Phase 4 admin preview](docs/phase-4-admin-preview.md).
 The public `casa-apero.com` test storefront and HTTP 403 order restrictions remain
-unchanged. Creating the staging D1/Worker/domain binding requires new approval.
+unchanged. Administrative writes remain disabled.
 
 Local storefront and Phase 2 request backend for the existing Casa Apero repository. React, Vite,
 TypeScript and Tailwind CSS. Work stays on `develop`. The original GitHub Pages
