@@ -1,0 +1,19 @@
+{
+ "$schema":"./node_modules/wrangler/config-schema.json",
+ "name":"casa-apero-admin-staging",
+ "main":"worker/admin-preview.ts",
+ "compatibility_date":"2026-10-24",
+ "workers_dev":false,"preview_urls":false,"upload_source_maps":false,
+ "routes":[{"pattern":"admin.casa-apero.com","custom_domain":true}],
+ "assets":{"binding":"ASSETS","not_found_handling":"single-page-application","run_worker_first":true},
+ "observability":{"enabled":false},
+ "vars":{
+  "APP_ENV":"admin-preview","ADMIN_AUTH_MODE":"access","ADMIN_WRITES_ENABLED":"false",
+  "CHECKOUT_ENABLED":"false","ADMIN_PREVIEW_DATASET":"casa-apero-admin-staging-fictional-v1",
+  "ACCESS_ISSUER":"","ACCESS_AUDIENCE":"","ADMIN_EMAIL_ALLOWLIST":""
+ },
+ // This is a deliberate unprovisioned placeholder, not the production database.
+ // Replace only after approval to create the separate EU staging database.
+ "d1_databases":[{"binding":"DB","database_name":"casa-apero-admin-staging",
+  "database_id":"00000000-0000-0000-0000-000000000004","remote":false,"migrations_dir":"migrations"}]
+}

@@ -1,11 +1,11 @@
 import type { AdminItem, AdminOrder, AdminProduct, AuditRow, EventSale, FinancialEvent, OrderDetail } from '../../shared/admin';
 import { ApiError } from '../validation';
-import { authorizeAdmin, localAdmin, localLogin, sameOrigin } from './auth';
+import { authorizeAdmin, localAdmin, localLogin, logoutAdmin, sameOrigin } from './auth';
 import type { AdminAuthEnv, AdminIdentity } from './auth';
 import { adminText, cents, csv, date, fail, report, today, transition } from './domain';
 
 export interface AdminEnv extends AdminAuthEnv { DB?: D1Database; ASSETS?: Fetcher; ADMIN_WRITES_ENABLED?: string }
-export const privateHeaders = { 'Cache-Control': 'no-store, private', 'X-Robots-Tag': 'noindex, nofollow', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' };
+export const privateHeaders = { 'Cache-Control': 'no-store, private', 'X-Robots-Tag': 'noindex, nofollow', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Frame-Options':'DENY', 'Content-Security-Policy':"frame-ancestors 'none'; base-uri 'self'; object-src 'none'" };
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: privateHeaders });
 const orderSelect = `SELECT o.id,o.reference,o.customer_name,o.email,o.phone,o.arrangement,o.requested_date,o.notes,
  o.internal_notes,o.confirmed_arrangements,o.confirmation_evidence,o.workflow_status,o.contract_status,o.source,
@@ -180,8 +180,8 @@ export async function adminApi(request: Request, env: AdminEnv): Promise<Respons
    if (!env.DB) throw new ApiError(503,'db_unconfigured','Lokale beheerdatabase ontbreekt.'); const db=env.DB;
    const writing=!['GET','HEAD'].includes(request.method);
    if (writing) { sameOrigin(request); if (!localAdmin(request,env) && env.ADMIN_WRITES_ENABLED!=='true') throw new ApiError(403,'writes_disabled','Beheerwijzigingen zijn nog niet ingeschakeld.'); }
-   if (path==='/api/admin/session' && request.method==='GET') return json(actor);
-   if (path==='/api/admin/logout' && request.method==='POST') return new Response(null,{status:204,headers:{...privateHeaders,'Set-Cookie':'casa_admin_local=; HttpOnly; SameSite=Strict; Path=/api/admin; Max-Age=0'}});
+   if (path==='/api/admin/session' && request.method==='GET') return json({...actor,preview:env.APP_ENV==='admin-preview',writesEnabled:localAdmin(request,env)||env.ADMIN_WRITES_ENABLED==='true'});
+   if (path==='/api/admin/logout' && request.method==='POST') return logoutAdmin();
    if (path==='/api/admin/orders' && request.method==='GET') {
      const search=(url.searchParams.get('q')??'').slice(0,100).replace(/[\\%_]/g,'\\$&');
      const page=Number(url.searchParams.get('page')??0); if (!Number.isInteger(page)||page<0||page>1000) fail('Ongeldige pagina.');

@@ -2,7 +2,9 @@ node_modules/
 dist/
 dist-staging/
 dist-admin/
+dist-admin-preview/
 admin-test-results/
+admin-preview-test-results/
 .vite/
 .wrangler/
 .env*
