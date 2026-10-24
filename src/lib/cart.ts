@@ -3,6 +3,19 @@ import type { Product, ProductVariant } from '../data/catalogue';
 export type CartItem = { productId: string; variantId: string; quantity: number };
 export type CartLine = CartItem & { product: Product; variant: ProductVariant; totalCents: number };
 export const CART_STORAGE_KEY = 'casa-apero.cart.v1';
+export const TIMED_CART_STORAGE_KEY = 'casa-apero.cart.v2';
+export const CART_LIFETIME_MS = 4 * 60 * 60 * 1000;
+export type StoredCart = { items: CartItem[]; expiresAt: number };
+
+export function restoreTimedCart(raw: string | null, catalogue: Product[], now = Date.now()): StoredCart {
+  const empty = { items: [], expiresAt: 0 };
+  try {
+    const value = raw ? JSON.parse(raw) : null;
+    if (!value || typeof value.expiresAt !== 'number' || !Number.isFinite(value.expiresAt)
+      || value.expiresAt <= now || value.expiresAt > now + CART_LIFETIME_MS) return empty;
+    return { items: normaliseCart(value.items, catalogue), expiresAt: value.expiresAt };
+  } catch { return empty; }
+}
 export const MAX_QUANTITY = 99;
 
 export function quantity(value: unknown): number {

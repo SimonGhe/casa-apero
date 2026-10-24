@@ -5,15 +5,18 @@ import { Home } from './pages/Home';
 import { Catalogue } from './pages/Catalogue';
 import { ProductDetail } from './pages/ProductDetail';
 import { Cart } from './pages/Cart';
-import { Contact, NotFound, Ordering, Privacy, Story } from './pages/StaticPages';
+import { Contact, NotFound, Ordering, Story } from './pages/StaticPages';
+import { Cookies, LegalNotice, Privacy, Terms, Withdrawal } from './pages/Legal';
+import { legalPages } from './data/legal';
 import { products } from './data/catalogue';
 
 export function App() {
   const { pathname } = useLocation();
   useEffect(() => {
     const title = ({ '/': 'Handgemaakt voor jouw aperomoment', '/collectie': 'De collectie', '/winkelmand': 'Winkelmand', '/bestellen': 'Bestellen & afspreken', '/ons-verhaal': 'Ons verhaal', '/contact': 'Contact', '/privacy': 'Privacy' } as Record<string, string>)[pathname]
+      ?? legalPages.find((page) => page.path === pathname)?.title
       ?? products.find((product) => pathname === `/product/${product.slug}`)?.name ?? 'Pagina niet gevonden';
-    document.title = `${title} | Casa Apero`;
+    document.title = `${legalPages.find((page) => page.path === pathname)?.title ?? title} | Casa Apero`;
   }, [pathname]);
   return <Routes><Route element={<Layout />}>
     <Route index element={<Home />} />
@@ -24,6 +27,10 @@ export function App() {
     <Route path="ons-verhaal" element={<Story />} />
     <Route path="contact" element={<Contact />} />
     <Route path="privacy" element={<Privacy />} />
+    <Route path="algemene-voorwaarden" element={<Terms />} />
+    <Route path="wettelijke-vermeldingen" element={<LegalNotice />} />
+    <Route path="herroepingsrecht" element={<Withdrawal />} />
+    <Route path="cookies" element={<Cookies />} />
     <Route path="*" element={<NotFound />} />
   </Route></Routes>;
 }

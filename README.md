@@ -131,3 +131,16 @@ No credentials belong in `VITE_*` variables: they are public browser values.
 Local `.env*`, `.dev.vars*`, `.wrangler/` and all test/build outputs are ignored.
 
 See `docs/implementation-plan.md` for the remaining phases and release gates.
+
+## Legal pages and checkout preparation
+
+Dutch draft terms, privacy, legal notice, withdrawal/returns/complaints and cookie
+information are available through the footer. Every legal page is explicitly a
+school/Vlajo review draft. Checkout remains inactive, including its unchecked
+acknowledgement and disabled order button; no customer data or orders are submitted.
+Cart persistence now lasts four hours after the last change; old indefinite cart
+storage is discarded. No consent banner is needed for the current scoped storage.
+
+See [legal readiness](docs/legal-readiness.md) for official sources checked on
+24 October 2026, unresolved identity/tax/privacy questions, the storage inventory,
+durable-medium confirmation without automated email, and Phase 2 release gates.

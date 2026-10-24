@@ -423,3 +423,16 @@ main:focus { outline: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+.legal-page { overflow-wrap: anywhere; }
+.legal-page .page-title { font-size: clamp(36px, 6vw, 64px); }
+.legal-version { color: var(--muted); font-size: 13px; margin-top: 16px; }
+.legal-pending { padding: 12px 16px; border-left: 2px solid var(--olive); background: #efe8d9; }
+.legal-navigation { display: flex; flex-wrap: wrap; gap: 12px 24px; padding-block: 24px; font-size: 13px; }
+.legal-navigation a, .legal-page .prose a, .checkout-preparation a { text-decoration: underline; text-underline-offset: 3px; }
+.withdrawal-model { border: 1px solid var(--olive); padding: 16px; }
+.checkout-preparation { border-top: 1px solid var(--olive); padding-block: 20px; }
+.checkout-lines { list-style: none; padding: 0; }
+.checkout-lines li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding-block: 8px; }
+.checkout-acknowledgement { display: flex; align-items: baseline; gap: 10px; margin-block: 20px; }
+.checkout-preparation button:disabled { cursor: not-allowed; opacity: .65; }

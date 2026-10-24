@@ -4,6 +4,7 @@ import { money } from '../data/catalogue';
 import { useCart } from '../context/CartContext';
 import { business } from '../data/business';
 import { SocialLinks } from '../components/SocialLinks';
+import { CheckoutPreparation } from '../components/CheckoutPreparation';
 
 export function Ordering() {
   const { count, totalCents } = useCart();
@@ -21,6 +22,7 @@ export function Ordering() {
           <li><strong>Betaal bij afhaling of levering</strong><p>{business.payment} De beschikbare elektronische methode spreken we vooraf af. Er is geen online betaling.</p></li>
         </ol>
         <div className="notice"><strong>De webshop is nog in voorbereiding.</strong><p>De producten en prijzen zijn bevestigd. Je kunt je winkelmand samenstellen, maar het bestelformulier is nog niet actief. Er worden geen bestellingen of contactgegevens verstuurd en er worden geen automatische bevestigingsmails verzonden.</p></div>
+        <CheckoutPreparation />
       </div>
       <aside className="order-summary"><ShoppingBag size={24} aria-hidden="true" /><h2>{count ? 'Jouw selectie staat klaar' : 'Een kommetje kiezen?'}</h2><p>{count ? `${count} artikelen in je winkelmand.` : 'Bekijk onze collectie potjes en aperoschalen.'}</p>{count > 0 && <div className="summary-row summary-total"><span>Totaal producten</span><strong>{money(totalCents)}</strong></div>}<p className="summary-note">Eventuele leveringskosten zijn niet inbegrepen en worden in overleg bevestigd.</p><Link className="button button-primary w-full" to={count ? '/winkelmand' : '/collectie'}>{count ? 'Bekijk je winkelmand' : 'Ontdek de collectie'}<ArrowRight size={18} aria-hidden="true" /></Link><p className="summary-note">Bestelformulier nog niet beschikbaar. Er is nog niets besteld of betaald.</p></aside>
     </div>
@@ -50,10 +52,6 @@ export function Contact() {
       <Link className="text-link" to="/bestellen">Lees hoe bestellen zal werken <ArrowRight size={17} aria-hidden="true" /></Link>
     </div>
   </div>;
-}
-
-export function Privacy() {
-  return <div className="content-width page-space narrow-page"><p className="eyebrow">Zorg voor jouw gegevens</p><h1 className="page-title">Privacy</h1><div className="prose"><p className="notice">Voorlopige informatie voor de lokale ontwerpversie. De definitieve privacyinformatie moet nog worden bevestigd door de school.</p><h2>In deze voorvertoning</h2><p>Er is geen actief bestelformulier. We slaan alleen productkeuzes en aantallen in de winkelmand op in deze browser, zodat je selectie tijdens het bekijken behouden blijft. Er worden hierbij geen naam, e-mailadres of telefoonnummer opgeslagen.</p><p>Verwijder de producten uit je winkelmand of wis de websitegegevens in je browser om de bewaarde selectie te verwijderen. Deze versie gebruikt geen analysetrackers.</p><h2>Voor de opening</h2><p>Het team en de school moeten de verantwoordelijke contactpersoon, de bewaartermijnen, de definitieve doeleinden en de procedure voor inzage en verwijdering aanvullen. De webshop neemt tot die tijd geen echte bestellingen aan.</p><Link className="text-link" to="/contact">Contactinformatie <ArrowRight size={17} aria-hidden="true" /></Link></div></div>;
 }
 
 export function NotFound() {

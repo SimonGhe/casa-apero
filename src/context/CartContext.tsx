@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { products, shopSettings } from '../data/catalogue';
-import { addItem, CART_STORAGE_KEY, parseCart, resolveCart, setQuantity } from '../lib/cart';
-import type { CartItem, CartLine } from '../lib/cart';
+import { addItem, CART_STORAGE_KEY, CART_LIFETIME_MS, TIMED_CART_STORAGE_KEY, restoreTimedCart, resolveCart, setQuantity } from '../lib/cart';
+import type { CartItem, CartLine, StoredCart } from '../lib/cart';
 
 type CartContextValue = {
   lines: CartLine[];
@@ -15,25 +15,38 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-function readCart(): CartItem[] {
-  try { return parseCart(localStorage.getItem(CART_STORAGE_KEY), products); }
-  catch { return []; }
+function readCart(): StoredCart {
+  try { return restoreTimedCart(localStorage.getItem(TIMED_CART_STORAGE_KEY), products); }
+  catch { return { items: [], expiresAt: 0 }; }
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState(readCart);
+  const [stored, setStored] = useState(readCart);
+  const { items, expiresAt } = stored;
+  const setItems = (change: (previous: CartItem[]) => CartItem[]) => setStored((previous) => ({
+    items: change(previous.expiresAt > Date.now() ? previous.items : []),
+    expiresAt: Date.now() + CART_LIFETIME_MS,
+  }));
   const [storageWarning, setStorageWarning] = useState(false);
 
   useEffect(() => {
     try {
-      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+      localStorage.removeItem(CART_STORAGE_KEY);
+      if (items.length) localStorage.setItem(TIMED_CART_STORAGE_KEY, JSON.stringify(stored));
+      else localStorage.removeItem(TIMED_CART_STORAGE_KEY);
       setStorageWarning(false);
     } catch { setStorageWarning(true); }
-  }, [items]);
+  }, [stored, items]);
+
+  useEffect(() => {
+    if (!items.length) return;
+    const timer = window.setTimeout(() => setStored({ items: [], expiresAt: 0 }), Math.max(0, expiresAt - Date.now()));
+    return () => window.clearTimeout(timer);
+  }, [items, expiresAt]);
 
   useEffect(() => {
     const sync = (event: StorageEvent) => {
-      if (event.key === CART_STORAGE_KEY || event.key === null) setItems(readCart());
+      if (event.key === TIMED_CART_STORAGE_KEY || event.key === null) setStored(readCart());
     };
     window.addEventListener('storage', sync);
     return () => window.removeEventListener('storage', sync);

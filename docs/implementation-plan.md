@@ -70,6 +70,12 @@ per-product verified costs and domain registration confirmation.
 
 ## Phase 2: real local order workflow
 
+The legal-readiness requirements in [legal-readiness.md](legal-readiness.md)
+supersede the earlier confirmation-page-only plan below. No request or binding
+checkout may open before seller/cost/privacy approval, durable-medium contract
+confirmation and the required online withdrawal process. The current legal pages
+are drafts; multiple authorized students need individual least-privilege access.
+
 - Add a Worker entry point and separate local/test/production D1 bindings.
 - Migrations for products, variants, ordered photo records, settings, orders and
   immutable order-item price snapshots. Store euro amounts as integer cents.

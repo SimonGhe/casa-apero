@@ -6,6 +6,7 @@ import { shopSettings } from '../data/catalogue';
 import { business } from '../data/business';
 import { BrandLogo } from './BrandLogo';
 import { SocialLinks } from './SocialLinks';
+import { LegalNavigation } from '../pages/Legal';
 
 export function Layout() {
   const { count, storageWarning } = useCart();
@@ -58,6 +59,7 @@ export function Layout() {
         <div><h2>Ontdek</h2><Link to="/collectie">De collectie</Link><Link to="/ons-verhaal">Ons verhaal</Link><Link to="/bestellen">Bestellen & afspreken <ArrowUpRight size={14} aria-hidden="true" /></Link></div>
         <div><h2>Goed om te weten</h2><Link to="/contact">Contact</Link><Link to="/privacy">Privacy</Link>{business.publicContactEmail && <a href={`mailto:${business.publicContactEmail}`}>{business.publicContactEmail}</a>}<p>Handgemaakt op bestelling.<br />Ongeveer 2 weken productietijd (schatting).<br />Betalen bij afhaling of levering.</p></div>
       </div>
+      <div className="content-width"><LegalNavigation /></div>
       <div className="footer-bottom content-width"><span>Casa Apero</span><span>Lokale voorvertoning · productfoto's volgen</span><span>Met zorg gemaakt.</span></div>
     </footer>
   </>;
