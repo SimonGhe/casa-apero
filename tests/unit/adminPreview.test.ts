@@ -59,6 +59,24 @@ it('defaults to read-only and allows only separately enabled fictional mutations
  expect(await env.DB!.prepare('SELECT actor_id FROM audit_log').first('actor_id')).toBe('fictional-student');
  expect((await call(`/api/admin/orders/${id}`,{authenticated:true,body:{...body,version:1},settings:{ADMIN_WRITES_ENABLED:'true'},headers:{Origin:'https://evil.invalid'}})).status).toBe(403);
 });
+it('requires verified Access and write permission for an unchanged legacy arrangement edit',async()=>{
+ const id='40000000-0000-4000-8000-000000000001',path=`/api/admin/orders/${id}`;
+ // Local-only fixture representing an already completed historical order.
+ await env.DB!.exec("UPDATE orders SET workflow_status='completed',request_status='closed',production_status='completed',contract_status='confirmed',confirmed_at='2026-10-24T10:00:00Z',durable_confirmation_at='2026-10-24T10:00:00Z',delivery_cents=0,total_cents=1398,version=5,confirmed_arrangements='test';");
+ const body={version:5,status:'completed',internalNotes:'Fictieve geautoriseerde notitie',confirmedArrangements:'test'},settings={ADMIN_WRITES_ENABLED:'true'};
+ expect((await call(path,{body,settings})).status).toBe(401);
+ expect((await call(path,{authenticated:true,body,settings,claims:{email:'unauthorized@example.invalid'}})).status).toBe(403);
+ expect((await call(path,{authenticated:true,body})).status).toBe(403);
+ expect((await call(path,{authenticated:true,body,settings,headers:{Origin:'https://evil.invalid'}})).status).toBe(403);
+ expect(await env.DB!.prepare('SELECT version FROM orders WHERE id=?').bind(id).first('version')).toBe(5);
+ expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM audit_log').first('n')).toBe(0);
+ const response=await call(path,{authenticated:true,body,settings});expect(response.status).toBe(200);
+ expect(await response.json()).toMatchObject({order:{version:6,workflow_status:'completed',confirmed_arrangements:'test',internal_notes:body.internalNotes,total_cents:1398}});
+ expect((await call(path,{authenticated:true,body,settings})).status).toBe(409);
+ expect((await call(path,{authenticated:true,body:{...body,version:6,confirmedArrangements:'other'},settings})).status).toBe(400);
+ expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM audit_log').first('n')).toBe(1);
+ expect(await env.DB!.prepare('SELECT actor_id FROM audit_log').first('actor_id')).toBe('fictional-student');
+});
 it('throttles verified subjects independently and expires counters without storing identities',async()=>{
  const db=env.DB!,now=600000;
  for(let n=0;n<ADMIN_WRITE_LIMIT;n++)await limitAdminWrites(db,'fictional-subject',now);

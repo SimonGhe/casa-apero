@@ -118,3 +118,95 @@ describe('admin API on local D1',()=>{
   await expect(env.DB!.exec("UPDATE audit_log SET action='tampered';")).rejects.toThrow();
  });
 });
+
+describe('legacy arrangement compatibility on local D1',()=>{
+ async function legacy(state:'completed'|'cancelled'|'confirmed',arrangements='test'){
+  const id=await seed();let detail=await confirm(id);
+  detail=await json<OrderDetail>(`orders/${id}/payment`,{version:detail.order.version,amountPaidCents:1398,amountRefundedCents:0,method:'Fictief contant'});
+  for(const status of state==='completed'?['in_production','ready','completed']:state==='cancelled'?['cancelled']:[])detail=await json<OrderDetail>(`orders/${id}`,{version:detail.order.version,status});
+  // Fixture only: simulate text accepted by an older release, never repair it.
+  await env.DB!.prepare('UPDATE orders SET confirmed_arrangements=? WHERE id=?').bind(arrangements,id).run();
+  return (await json<OrderDetail>(`orders/${id}`)).order;
+ }
+ async function protectedRecords(){
+  const db=env.DB!;
+  return {
+   items:(await db.prepare('SELECT * FROM order_items ORDER BY id').all()).results,
+   payments:(await db.prepare('SELECT * FROM payment_status ORDER BY order_id').all()).results,
+   history:(await db.prepare('SELECT * FROM order_status_history ORDER BY id').all()).results,
+   finances:(await db.prepare('SELECT * FROM financial_events ORDER BY id').all()).results,
+   audit:(await db.prepare('SELECT * FROM audit_log ORDER BY id').all()).results,
+  };
+ }
+ it.each([
+  ['completed','test'],['completed','  test  '],['completed',''],
+  ['cancelled','test'],['cancelled','  test  '],['cancelled','0'],
+ ] as const)('preserves %s legacy text %j through reads and notes-only edits',async(state,text)=>{
+  const order=await legacy(state,text),other=await seed();
+  const row=()=>env.DB!.prepare('SELECT * FROM orders WHERE id=?').bind(order.id).first<Record<string,unknown>>();
+  const before=await row(),otherBefore=await env.DB!.prepare('SELECT * FROM orders WHERE id=?').bind(other).first(),records=await protectedRecords();
+  expect((await json<OrderDetail>(`orders/${order.id}`)).order.confirmed_arrangements).toBe(text);
+  expect(await row()).toEqual(before);expect(await protectedRecords()).toEqual(records);
+  // Exercise omission and the exact echoed value sent by the student dashboard.
+  for(const [index,extra] of [{},{confirmedArrangements:text}].entries()){
+   const result=await json<OrderDetail>(`orders/${order.id}`,{version:order.version+index,status:state,internalNotes:`Fictieve teamnotitie ${index+1}`,...extra});
+   expect(result.order).toMatchObject({workflow_status:state,confirmed_arrangements:text,internal_notes:`Fictieve teamnotitie ${index+1}`,version:order.version+index+1});
+  }
+  const after=await row();
+  for(const key of Object.keys(before!))if(!['internal_notes','version','last_mutation_id'].includes(key))expect(after![key],key).toEqual(before![key]);
+  expect(await env.DB!.prepare('SELECT * FROM orders WHERE id=?').bind(other).first()).toEqual(otherBefore);
+  const saved=await protectedRecords();expect(saved.items).toEqual(records.items);expect(saved.payments).toEqual(records.payments);expect(saved.history).toEqual(records.history);expect(saved.finances).toEqual(records.finances);
+  expect(saved.audit).toHaveLength(records.audit.length+2);
+  for(const entry of records.audit)expect(saved.audit).toContainEqual(entry);
+  const oldIds=new Set(records.audit.map(row=>row.id));
+  for(const entry of saved.audit.filter(row=>!oldIds.has(row.id))){expect(entry.action).toBe('order.update');expect(JSON.parse(String(entry.after_json)).arrangements).toBe(text);}
+ });
+ it.each(['new','completed','cancelled'] as const)('validates every explicit arrangement edit on a %s order',async state=>{
+  const order=state==='new'?(await json<OrderDetail>(`orders/${await seed()}`)).order:await legacy(state);
+  if(state==='new')await env.DB!.prepare("UPDATE orders SET confirmed_arrangements='test' WHERE id=?").bind(order.id).run();
+  const before=await json<OrderDetail>(`orders/${order.id}`),records=await protectedRecords();
+  for(const value of ['other','', '          ',null,42,'x'.repeat(1001),'Afhalen\u0000 op afspraak']){
+   const response=await api(`orders/${order.id}`,{version:order.version,status:state,internalNotes:'Dit mag niet worden opgeslagen',confirmedArrangements:value});
+   expect(response.status,JSON.stringify(value)).toBe(400);
+  }
+  expect(await json<OrderDetail>(`orders/${order.id}`)).toEqual(before);expect(await protectedRecords()).toEqual(records);
+  const result=await json<OrderDetail>(`orders/${order.id}`,{version:order.version,status:state,confirmedArrangements:'Fictief afhalen in Brugge op afspraak'});
+  expect(result.order.confirmed_arrangements).toBe('Fictief afhalen in Brugge op afspraak');
+  expect(result.order.internal_notes).toBe(before.order.internal_notes);expect(result.order.version).toBe(order.version+1);
+  const after=await protectedRecords();expect(after.items).toEqual(records.items);expect(after.payments).toEqual(records.payments);expect(after.history).toEqual(records.history);expect(after.finances).toEqual(records.finances);
+  expect(after.audit).toHaveLength(records.audit.length+1);
+ });
+ it('does not grandfather incomplete arrangements when a new request is confirmed',async()=>{
+  const id=await seed();
+  const base={version:0,status:'confirmed',deliveryCents:0,confirmationEvidence:'Fictief bewijs',durableProvidedAt:new Date().toISOString()};
+  for(const text of ['test','          ','Fictief afhalen\u0000 op afspraak','x'.repeat(1001)]){
+   await env.DB!.prepare('UPDATE orders SET confirmed_arrangements=? WHERE id=?').bind(text,id).run();
+   for(const extra of [{},{confirmedArrangements:text}])expect((await api(`orders/${id}`,{...base,...extra})).status).toBe(400);
+   expect((await json<OrderDetail>(`orders/${id}`)).order).toMatchObject({workflow_status:'new',version:0,confirmed_arrangements:text});
+  }
+  expect((await confirm(id)).order.workflow_status).toBe('confirmed');
+ });
+ it('keeps permitted production steps available without rewriting an unchanged legacy arrangement',async()=>{
+  const order=await legacy('confirmed');
+  const result=await json<OrderDetail>(`orders/${order.id}`,{version:order.version,status:'in_production',confirmedArrangements:'test'});
+  expect(result.order).toMatchObject({workflow_status:'in_production',confirmed_arrangements:'test',total_cents:1398,amount_paid_cents:1398});
+ });
+ it('keeps authentication, CSRF and optimistic concurrency checks on legacy edits',async()=>{
+  const order=await legacy('completed'),input={version:order.version,status:'completed',internalNotes:'Fictieve nieuwe notitie',confirmedArrangements:'test'},before=await protectedRecords();
+  const denied=await adminWorker.fetch(new Request(`${origin}/api/admin/orders/${order.id}`,{method:'PUT',headers:{Origin:origin,'Content-Type':'application/json','Cf-Access-Authenticated-User-Email':'test@example.invalid'},body:JSON.stringify(input)}),env);
+  expect([401,403]).toContain(denied.status);
+  expect((await api(`orders/${order.id}`,input,'PUT','https://evil.invalid')).status).toBe(403);
+  expect(await protectedRecords()).toEqual(before);
+  const responses=await Promise.all([api(`orders/${order.id}`,input),api(`orders/${order.id}`,{...input,internalNotes:'Andere fictieve notitie'})]);
+  expect(responses.map(response=>response.status).sort()).toEqual([200,409]);
+  expect((await api(`orders/${order.id}`,input)).status).toBe(409);
+  const detail=await json<OrderDetail>(`orders/${order.id}`);expect(detail.order.version).toBe(order.version+1);expect(detail.order.confirmed_arrangements).toBe('test');
+  const after=await protectedRecords();expect(after.audit).toHaveLength(before.audit.length+1);expect(after.finances).toEqual(before.finances);
+ });
+ it('rolls back a legacy notes edit if its audit insert fails',async()=>{
+  const order=await legacy('completed'),before=await env.DB!.prepare('SELECT * FROM orders WHERE id=?').bind(order.id).first(),records=await protectedRecords();
+  await env.DB!.exec("CREATE TRIGGER legacy_audit_failure BEFORE INSERT ON audit_log BEGIN SELECT RAISE(ABORT,'fictional audit failure'); END;");
+  expect((await api(`orders/${order.id}`,{version:order.version,status:'completed',internalNotes:'Niet bewaren',confirmedArrangements:'test'})).status).toBe(503);
+  expect(await env.DB!.prepare('SELECT * FROM orders WHERE id=?').bind(order.id).first()).toEqual(before);expect(await protectedRecords()).toEqual(records);
+ });
+});

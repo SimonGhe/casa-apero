@@ -58,10 +58,13 @@ async function updateOrder(db: D1Database, id: string, input: Record<string,unkn
  const before = await getOrder(db,id); expectedVersion(input.version,before.version);
  const state = transition(before.workflow_status,input.status);
  const notes = adminText(input.internalNotes ?? before.internal_notes);
- const arrangements = adminText(input.confirmedArrangements ?? before.confirmed_arrangements,1000);
+ // Preserve unchanged legacy text verbatim, including when the UI echoes it.
+ // Validate any explicitly changed value; null is an edit, not "leave unchanged".
+ const arrangementsChanged = Object.hasOwn(input,'confirmedArrangements') && input.confirmedArrangements !== before.confirmed_arrangements;
+ const arrangements = arrangementsChanged ? adminText(input.confirmedArrangements,1000) : before.confirmed_arrangements;
  const evidence = adminText(input.confirmationEvidence ?? before.confirmation_evidence,1000);
  const confirming = before.workflow_status === 'new' && state === 'confirmed';
- if(state!=='new'&&state!=='cancelled'&&arrangements.length<10) fail('Vul volledige afhaal- of leverafspraken in: plaats en afgesproken moment of contactprocedure (minstens 10 tekens).');
+ if((confirming||arrangementsChanged)&&adminText(arrangements,1000).length<10) fail('Vul volledige afhaal- of leverafspraken in: plaats en afgesproken moment of contactprocedure (minstens 10 tekens).');
  let delivery = before.delivery_cents;
  let durableAt: string|null = null;
  if (confirming) {
