@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
@@ -9,11 +9,14 @@ import { Contact, NotFound, Ordering, Story } from './pages/StaticPages';
 import { Cookies, LegalNotice, Privacy, Terms, Withdrawal } from './pages/Legal';
 import { legalPages } from './data/legal';
 import { products } from './data/catalogue';
+const LocalCheckout = import.meta.env.MODE === 'staging' ? null : lazy(() => import('./pages/LocalCheckout').then((module) => ({ default: module.LocalCheckout })));
+const RequestConfirmation = import.meta.env.MODE === 'staging' ? null : lazy(() => import('./pages/LocalCheckout').then((module) => ({ default: module.RequestConfirmation })));
 
 export function App() {
   const { pathname } = useLocation();
   useEffect(() => {
     const title = ({ '/': 'Handgemaakt voor jouw aperomoment', '/collectie': 'De collectie', '/winkelmand': 'Winkelmand', '/bestellen': 'Bestellen & afspreken', '/ons-verhaal': 'Ons verhaal', '/contact': 'Contact', '/privacy': 'Privacy' } as Record<string, string>)[pathname]
+      ?? ({ '/bestellen/lokaal': 'Vrijblijvende testaanvraag', '/bestellen/ontvangen': 'Ontvangstbewijs' } as Record<string, string>)[pathname]
       ?? legalPages.find((page) => page.path === pathname)?.title
       ?? products.find((product) => pathname === `/product/${product.slug}`)?.name ?? 'Pagina niet gevonden';
     document.title = `${legalPages.find((page) => page.path === pathname)?.title ?? title} | Casa Apero`;
@@ -24,6 +27,8 @@ export function App() {
     <Route path="product/:slug" element={<ProductDetail />} />
     <Route path="winkelmand" element={<Cart />} />
     <Route path="bestellen" element={<Ordering />} />
+    {LocalCheckout && <Route path="bestellen/lokaal" element={<Suspense fallback={<p>Even laden…</p>}><LocalCheckout /></Suspense>} />}
+    {RequestConfirmation && <Route path="bestellen/ontvangen" element={<Suspense fallback={<p>Even laden…</p>}><RequestConfirmation /></Suspense>} />}
     <Route path="ons-verhaal" element={<Story />} />
     <Route path="contact" element={<Contact />} />
     <Route path="privacy" element={<Privacy />} />

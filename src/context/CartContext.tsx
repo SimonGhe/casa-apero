@@ -9,6 +9,7 @@ type CartContextValue = {
   count: number;
   totalCents: number;
   storageWarning: boolean;
+  clear: () => void;
   add: (productId: string, variantId: string, quantity: number) => void;
   update: (productId: string, variantId: string, quantity: number) => void;
 };
@@ -58,6 +59,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     count: lines.reduce((sum, line) => sum + line.quantity, 0),
     totalCents: lines.reduce((sum, line) => sum + line.totalCents, 0),
     storageWarning,
+    clear: () => setStored({ items: [], expiresAt: 0 }),
     add: (productId, variantId, count) => setItems((previous) => addItem(previous, productId, variantId, count, products, shopSettings.ordersPaused)),
     update: (productId, variantId, count) => setItems((previous) => setQuantity(previous, productId, variantId, count)),
   }}>{children}</CartContext.Provider>;

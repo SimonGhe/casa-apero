@@ -4,6 +4,15 @@ Onderzocht op 24 oktober 2026. Dit is een implementatie- en beoordelingsdocument
 geen goedkeuring van de juridische of fiscale positie van Casa Apero.
 Alleen lokaal op `develop`; geen push, productie-infrastructuur of orderontvangst.
 
+Phase 2-aanvulling: het domein **casa-apero.com** is geregistreerd via Cloudflare,
+maar niet gepubliceerd. De openbare pagina `/bestellen` blijft inactief.
+Er bestaat nu een afzonderlijk loopback-only testformulier met lokale D1-opslag
+van uitsluitend fictieve aanvragen, zonder koopovereenkomst. Zie
+[Phase 2 local guide](phase-2-local.md) voor de actuele API-/opslaginventaris en
+testprocedures. Dit vervangt de eerdere uitspraak dat er nergens een test-API is.
+De schoolgoedkeuringen en lanceringsvoorwaarden hieronder blijven gelden voor
+echte gegevens en publieke bestellingen.
+
 ## Implementatie
 
 Routes: `/algemene-voorwaarden`, `/privacy`, `/wettelijke-vermeldingen`,

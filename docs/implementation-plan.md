@@ -1,5 +1,14 @@
 # Casa Apero implementation plan
 
+## Current Phase 2 status
+
+Local Workers/Vite/D1 request processing is implemented. See
+[Phase 2 local guide](phase-2-local.md) for commands and security/release gates.
+Only synthetic, non-binding requests can be submitted on loopback. The
+registered domain is **casa-apero.com** via Cloudflare; no deployment is enabled.
+The historical phases below remain design context; no production order opening
+is implied by completing the local implementation.
+
 ## Inspection and requirement conflicts
 
 Baseline: `1f66065`, original static HTML/CSS, one supplied atmosphere image,
@@ -146,8 +155,8 @@ are drafts; multiple authorized students need individual least-privilege access.
 - Document school-year shutdown: pause ordering, finish/refund open orders, export
   necessary orders and financial records, backup, verify restore, anonymise/delete
   customer details according to the approved policy, then retire routing and Access.
-- Confirm domain registration for casaapero.com. Configure approved hostname and
-  admin.casaapero.com separately. Check free-plan limits before creating resources;
+- Domain casa-apero.com is registered via Cloudflare. Configure approved hostname and
+  any future protected admin hostname separately. Check free-plan limits before creating resources;
   no paid plan may be enabled without approval.
 - Obtain approval before a Git push, Cloudflare deployment or public domain change.
   Keep `main` and its GitHub Pages deployment intact until replacement is accepted.

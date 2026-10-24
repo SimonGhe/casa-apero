@@ -1,8 +1,38 @@
 # Casa Apero
 
-Local Phase 1 storefront for the existing Casa Apero repository. React, Vite,
+Local storefront and Phase 2 request backend for the existing Casa Apero repository. React, Vite,
 TypeScript and Tailwind CSS. Work stays on `develop`. The original GitHub Pages
 website remains on `main`.
+
+## Phase 2 local workflow
+
+The domain **casa-apero.com** is registered through Cloudflare; production has not
+been deployed or connected. Use only fictitious data locally.
+
+The separate frontend-only staging preview is available at
+**https://casa-apero-staging.simongheneyn.workers.dev**. It rejects all API requests,
+has no D1 binding, and accepts no orders. See [staging deployment](docs/staging.md)
+for build, deployment, verification and isolation details.
+
+```powershell
+pnpm.cmd install --frozen-lockfile
+pnpm.cmd db:migrate
+pnpm.cmd dev
+```
+
+Add products, open `/bestellen`, then **Test het lokale bestelformulier**.
+The separate `/bestellen/lokaal` route creates non-binding synthetic D1 requests.
+The public ordering page remains inactive. Build/preview has no D1 binding and
+rejects submissions. Local development uses the Cloudflare Vite plugin/workerd.
+
+In another terminal, `pnpm.cmd demo:order` demonstrates creation and idempotent
+retry, and `pnpm.cmd db:inspect` shows non-sensitive stored order summaries.
+Restart the server and run `pnpm.cmd demo:verify` to verify persistence.
+
+See [Phase 2 local guide](docs/phase-2-local.md) for exact commands, schema/API,
+Turnstile modes, security boundaries and remaining launch blockers.
+The Phase 1 sections below describe the original storefront; Phase 2 adds only
+the explicitly gated local test workflow.
 
 ## Run locally
 
@@ -27,7 +57,8 @@ pnpm test:e2e
 ```
 
 The browser suite uses its own local Vite server if one is not already running.
-The compiled website is in `dist/`. `pnpm preview` serves that build locally.
+The compiled website is in `dist/client`, with the Worker in `dist/worker`.
+`pnpm preview` serves the disabled production build locally.
 
 ## What works in Phase 1
 
@@ -63,7 +94,7 @@ The ordering page is a Phase 1 handoff, not a working checkout. It collects no
 customer information and does not submit orders. No fake order confirmation or
 reference is generated. The cart contains only product IDs, variant IDs and
 quantities; prices are resolved from the official catalogue data for this preview.
-The server must recalculate prices from D1 when Phase 2 is implemented.
+The Phase 2 local server recalculates prices from D1 and saves item snapshots.
 Old fictional product IDs are deliberately discarded when restoring a cart; they
 are never silently mapped to real products. New catalogue selections retain normal
 reload/navigation persistence.

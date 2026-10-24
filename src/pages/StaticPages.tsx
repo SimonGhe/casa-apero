@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { business } from '../data/business';
 import { SocialLinks } from '../components/SocialLinks';
 import { CheckoutPreparation } from '../components/CheckoutPreparation';
+import { LocalRequestLink } from '../components/LocalRequestLink';
 
 export function Ordering() {
   const { count, totalCents } = useCart();
@@ -23,6 +24,7 @@ export function Ordering() {
         </ol>
         <div className="notice"><strong>De webshop is nog in voorbereiding.</strong><p>De producten en prijzen zijn bevestigd. Je kunt je winkelmand samenstellen, maar het bestelformulier is nog niet actief. Er worden geen bestellingen of contactgegevens verstuurd en er worden geen automatische bevestigingsmails verzonden.</p></div>
         <CheckoutPreparation />
+        <LocalRequestLink />
       </div>
       <aside className="order-summary"><ShoppingBag size={24} aria-hidden="true" /><h2>{count ? 'Jouw selectie staat klaar' : 'Een kommetje kiezen?'}</h2><p>{count ? `${count} artikelen in je winkelmand.` : 'Bekijk onze collectie potjes en aperoschalen.'}</p>{count > 0 && <div className="summary-row summary-total"><span>Totaal producten</span><strong>{money(totalCents)}</strong></div>}<p className="summary-note">Eventuele leveringskosten zijn niet inbegrepen en worden in overleg bevestigd.</p><Link className="button button-primary w-full" to={count ? '/winkelmand' : '/collectie'}>{count ? 'Bekijk je winkelmand' : 'Ontdek de collectie'}<ArrowRight size={18} aria-hidden="true" /></Link><p className="summary-note">Bestelformulier nog niet beschikbaar. Er is nog niets besteld of betaald.</p></aside>
     </div>

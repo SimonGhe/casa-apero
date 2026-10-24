@@ -34,7 +34,7 @@ export function Layout() {
 
   return <>
     <a className="skip-link" href="#main-content">Naar de inhoud</a>
-    <div className="preview-banner">Lokale voorvertoning <span aria-hidden="true">·</span> Bestellen is nog niet mogelijk</div>
+    <div className="preview-banner">{import.meta.env.MODE === 'staging' ? 'TESTVERSIE — Bestellingen nog niet mogelijk' : <>Lokale voorvertoning <span aria-hidden="true">·</span> Bestellen is nog niet mogelijk</>}</div>
     <header className="site-header">
       <div className="header-inner">
         <Link className="brand" to="/" aria-label="Casa Apero, naar de homepage"><BrandLogo className="header-logo" eager /><span className="brand-wordmark">Casa Apero<small>Handgemaakt. Samen genoten.</small></span></Link>
@@ -60,7 +60,7 @@ export function Layout() {
         <div><h2>Goed om te weten</h2><Link to="/contact">Contact</Link><Link to="/privacy">Privacy</Link>{business.publicContactEmail && <a href={`mailto:${business.publicContactEmail}`}>{business.publicContactEmail}</a>}<p>Handgemaakt op bestelling.<br />Ongeveer 2 weken productietijd (schatting).<br />Betalen bij afhaling of levering.</p></div>
       </div>
       <div className="content-width"><LegalNavigation /></div>
-      <div className="footer-bottom content-width"><span>Casa Apero</span><span>Lokale voorvertoning · productfoto's volgen</span><span>Met zorg gemaakt.</span></div>
+      <div className="footer-bottom content-width"><span>Casa Apero</span><span>{import.meta.env.MODE === 'staging' ? 'Testversie' : 'Lokale voorvertoning'} · productfoto's volgen</span><span>Met zorg gemaakt.</span></div>
     </footer>
   </>;
 }

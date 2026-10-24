@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-staging/
 .vite/
 .wrangler/
 .env*
@@ -9,4 +10,5 @@ dist/
 *.tsbuildinfo
 playwright-report/
 test-results/
+staging-test-results/
 .DS_Store

@@ -436,3 +436,12 @@ main:focus { outline: none; }
 .checkout-lines li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding-block: 8px; }
 .checkout-acknowledgement { display: flex; align-items: baseline; gap: 10px; margin-block: 20px; }
 .checkout-preparation button:disabled { cursor: not-allowed; opacity: .65; }
+.local-checkout { overflow-wrap: anywhere; }
+.local-checkout .page-title { font-size: clamp(36px, 6vw, 64px); }
+.request-form { margin-top: 32px; }
+.request-form fieldset { border: 0; padding: 0; min-width: 0; }
+.request-form legend { font-size: 24px; margin-bottom: 20px; }
+.request-form label { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+.request-form input:not([type="checkbox"]), .request-form select, .request-form textarea { width: 100%; min-width: 0; padding: 12px; background: #fffdf8; border: 1px solid var(--olive); border-radius: 4px; color: var(--olive-dark); font: inherit; }
+.request-form .request-check { flex-direction: row; align-items: baseline; gap: 10px; }
+.request-form .button { margin-block: 16px; max-width: 100%; white-space: normal; }

@@ -1,0 +1,9 @@
+# Optional Siteverify test mode, not needed for the default offline local mock.
+# Copy to ignored .dev.vars, restart pnpm dev. Never use real customer data.
+# APP_ENV must remain local, and the Worker also requires a loopback hostname.
+# TURNSTILE_MODE=siteverify-test
+# TURNSTILE_SITE_KEY=1x00000000000000000000AA
+# TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# These are Cloudflare's PUBLIC TEST keys, not production credentials.
+# siteverify-test accepts synthetic metadata only with this public test secret
+# and local+loopback checks. Real siteverify mode always checks hostname/action.
