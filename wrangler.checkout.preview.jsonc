@@ -1,0 +1,18 @@
+{
+ "$schema":"./node_modules/wrangler/config-schema.json",
+ "name":"casa-apero-staging",
+ "main":"worker/test-checkout.ts",
+ "compatibility_date":"2026-10-24",
+ "workers_dev":true,"preview_urls":false,"upload_source_maps":false,
+ "assets":{"binding":"ASSETS","not_found_handling":"single-page-application","run_worker_first":true},
+ "observability":{"enabled":false},
+ "vars":{
+  "APP_ENV":"test-checkout","CHECKOUT_ENABLED":"false","TEST_CHECKOUT_ENABLED":"false",
+  "TEST_CHECKOUT_DATASET":"casa-apero-admin-staging-fictional-v1",
+  "TEST_CHECKOUT_ISSUER":"","TEST_CHECKOUT_AUDIENCE":"","TEST_CHECKOUT_ALLOWED_EMAILS":"",
+  "ADMIN_ACCESS_AUDIENCE":"","TURNSTILE_MODE":"siteverify","TURNSTILE_SITE_KEY":""
+ },
+ // Existing fictional EU admin staging D1 only. Never use production D1.
+ "d1_databases":[{"binding":"DB","database_name":"casa-apero-admin-staging",
+  "database_id":"f8c58abc-95ab-4fd9-8279-5f0f0f2ada83","remote":false,"migrations_dir":"migrations"}]
+}

@@ -3,6 +3,8 @@ dist/
 dist-staging/
 dist-admin/
 dist-admin-preview/
+dist-test-checkout/
+test-checkout-results/
 admin-test-results/
 admin-preview-test-results/
 .vite/

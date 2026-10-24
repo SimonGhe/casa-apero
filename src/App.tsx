@@ -11,6 +11,7 @@ import { legalPages } from './data/legal';
 import {useCatalogue} from './context/CatalogueContext';
 const LocalCheckout = import.meta.env.MODE === 'staging' ? null : lazy(() => import('./pages/LocalCheckout').then((module) => ({ default: module.LocalCheckout })));
 const RequestConfirmation = import.meta.env.MODE === 'staging' ? null : lazy(() => import('./pages/LocalCheckout').then((module) => ({ default: module.RequestConfirmation })));
+const testCheckout=import.meta.env.MODE==='test-checkout';
 
 export function App() {
   const {products}=useCatalogue();
@@ -28,8 +29,10 @@ export function App() {
     <Route path="product/:slug" element={<ProductDetail />} />
     <Route path="winkelmand" element={<Cart />} />
     <Route path="bestellen" element={<Ordering />} />
-    {LocalCheckout && <Route path="bestellen/lokaal" element={<Suspense fallback={<p>Even laden…</p>}><LocalCheckout /></Suspense>} />}
-    {RequestConfirmation && <Route path="bestellen/ontvangen" element={<Suspense fallback={<p>Even laden…</p>}><RequestConfirmation /></Suspense>} />}
+    {LocalCheckout && !testCheckout && <Route path="bestellen/lokaal" element={<Suspense fallback={<p>Even laden…</p>}><LocalCheckout /></Suspense>} />}
+    {RequestConfirmation && !testCheckout && <Route path="bestellen/ontvangen" element={<Suspense fallback={<p>Even laden…</p>}><RequestConfirmation /></Suspense>} />}
+    {LocalCheckout && testCheckout && <Route path="test-bestellen" element={<Suspense fallback={<p>Even laden…</p>}><LocalCheckout authenticatedTest /></Suspense>} />}
+    {RequestConfirmation && testCheckout && <Route path="test-bestellen/ontvangen" element={<Suspense fallback={<p>Even laden…</p>}><RequestConfirmation authenticatedTest /></Suspense>} />}
     <Route path="ons-verhaal" element={<Story />} />
     <Route path="contact" element={<Contact />} />
     <Route path="privacy" element={<Privacy />} />

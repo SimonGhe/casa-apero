@@ -1,4 +1,5 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import type { jwtVerify } from 'jose';
+import {verifyAccessIdentity} from '../access-jwt';
 import { ApiError } from '../validation';
 
 export interface AdminAuthEnv {
@@ -6,7 +7,6 @@ export interface AdminAuthEnv {
  ADMIN_EMAIL_ALLOWLIST?: string;
 }
 export type AdminIdentity = { id: string; email: string; local: boolean };
-const keySets = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
 export function sameOrigin(request: Request) {
  if(request.headers.get('Origin')!==new URL(request.url).origin||request.headers.get('Sec-Fetch-Site')==='cross-site') throw new ApiError(403,'origin_rejected','Ongeldige herkomst.');
 }
@@ -17,12 +17,6 @@ export async function authorizeAccess(request: Request,env:AdminAuthEnv,resolver
  const token=request.headers.get('Cf-Access-Jwt-Assertion');
  if(!token||token.length>16384)throw new ApiError(401,'login_required','Aanmelden via Cloudflare Access is vereist.');
  try{
-  let keys=keySets.get(env.ACCESS_ISSUER);
-  if(!keys){keys=createRemoteJWKSet(new URL(`${env.ACCESS_ISSUER}/cdn-cgi/access/certs`),{timeoutDuration:5000,cooldownDuration:30000,cacheMaxAge:300000});keySets.set(env.ACCESS_ISSUER,keys);}
-  const {payload}=await jwtVerify(token,resolver??keys,{algorithms:['RS256'],issuer:env.ACCESS_ISSUER,audience:env.ACCESS_AUDIENCE,requiredClaims:['sub','exp','iat','email'],clockTolerance:5});
-  const email=typeof payload.email==='string'?payload.email.toLowerCase():'';
-  const allowed=env.ADMIN_EMAIL_ALLOWLIST.split(',').map(x=>x.trim().toLowerCase()).filter(Boolean);
-  if(payload.type!=='app'||!payload.sub||!allowed.includes(email)||typeof payload.iat!=='number'||payload.iat>Date.now()/1000+5)throw new Error('denied');
-  return {id:payload.sub,email,local:false};
+  return await verifyAccessIdentity(token,env.ACCESS_ISSUER,env.ACCESS_AUDIENCE,env.ADMIN_EMAIL_ALLOWLIST,resolver);
  }catch{throw new ApiError(403,'admin_denied','Geen geldige beheerdersmachtiging.');}
 }

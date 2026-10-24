@@ -11,7 +11,7 @@ const json = (body: unknown, status = 200) => Response.json(body, { status, head
 export async function digest(value: string): Promise<string> {
   return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
-async function body(request: Request): Promise<unknown> {
+export async function body(request: Request): Promise<unknown> {
   if (!request.headers.get('Content-Type')?.startsWith('application/json')) throw new ApiError(415, 'json_required', 'Verstuur JSON.');
   const reader = request.body?.getReader();
   if (!reader) throw new ApiError(400, 'invalid_json', 'Lege aanvraag.');
@@ -37,7 +37,7 @@ async function rateLimit(db: D1Database, request: Request) {
   await db.prepare('DELETE FROM rate_limits WHERE expires_at < ?').bind(Date.now()).run();
 }
 type ProductRow = { id: string; variant_id: string; name: string; price_cents: number; production_days: number; orders_paused: number; published: number };
-async function quote(db: D1Database, items: Selection[]): Promise<Quote> {
+export async function quote(db: D1Database, items: Selection[]): Promise<Quote> {
   const paused = await db.prepare("SELECT value FROM application_settings WHERE key='orders_paused'").first<{ value: string }>();
   if (paused?.value !== 'false') throw new ApiError(409, 'orders_paused', 'Aanvragen zijn tijdelijk gepauzeerd.');
   const rows = await db.prepare('SELECT id, variant_id, name, price_cents, production_days, orders_paused, published FROM products').all<ProductRow>();
@@ -49,7 +49,7 @@ async function quote(db: D1Database, items: Selection[]): Promise<Quote> {
   });
   return { items: lines, subtotalCents: lines.reduce((sum, line) => sum + line.totalCents, 0), deliveryCents: null, totalCents: null };
 }
-async function receipt(db: D1Database, id: string): Promise<Receipt> {
+export async function receipt(db: D1Database, id: string): Promise<Receipt> {
   const order = await db.prepare('SELECT reference, subtotal_cents, created_at FROM orders WHERE id=?').bind(id).first<{ reference: string; subtotal_cents: number; created_at: string }>();
   if (!order) throw new ApiError(404, 'not_found', 'Ontvangstbewijs niet gevonden.');
   const lines = await db.prepare(`SELECT product_id AS productId, variant_id AS variantId, product_name AS name,
@@ -58,13 +58,13 @@ async function receipt(db: D1Database, id: string): Promise<Receipt> {
   return { reference: order.reference, items: lines.results, subtotalCents: order.subtotal_cents,
     deliveryCents: null, totalCents: null, requestStatus: 'received', contractStatus: 'none', createdAt: order.created_at };
 }
-async function existing(db: D1Database, key: string, hash: string): Promise<Response | null> {
+export async function existing(db: D1Database, key: string, hash: string): Promise<Response | null> {
   const row = await db.prepare('SELECT request_hash, order_id FROM idempotency_keys WHERE key=?').bind(key).first<{ request_hash: string; order_id: string }>();
   if (!row) return null;
   if (row.request_hash !== hash) throw new ApiError(409, 'idempotency_conflict', 'Deze verzendcode hoort bij andere gegevens. Start een nieuwe aanvraag.');
   return json(await receipt(db, row.order_id));
 }
-async function createOrder(db: D1Database, input: RequestInput, key: string, hash: string) {
+export async function createOrder(db: D1Database, input: RequestInput, key: string, hash: string, testerHash?:string) {
   const id = crypto.randomUUID();
   const reference = `TEST-${crypto.randomUUID().replaceAll('-', '').slice(0, 16).toUpperCase()}`;
   const selection = JSON.stringify(input.items);
@@ -84,9 +84,14 @@ async function createOrder(db: D1Database, input: RequestInput, key: string, has
       db.prepare(`INSERT INTO order_items(order_id,product_id,variant_id,product_name,quantity,unit_price_cents,line_total_cents,production_days,unit_cost_cents)
         SELECT ?,p.id,p.variant_id,p.name,json_extract(j.value,'$.quantity'),p.price_cents,p.price_cents*json_extract(j.value,'$.quantity'),p.production_days,p.cost_cents
         FROM json_each(?) j JOIN products p ON p.id=json_extract(j.value,'$.productId')`).bind(id, selection),
-      db.prepare("INSERT INTO order_status_history(order_id,category,to_status,actor_id) VALUES (?,'request','received','local-test-customer')").bind(id),
+      db.prepare("INSERT INTO order_status_history(order_id,category,to_status,actor_id) VALUES (?,'request','received',?)").bind(id,testerHash?`test-checkout:${testerHash}`:'local-test-customer'),
       db.prepare('INSERT INTO payment_status(order_id) VALUES (?)').bind(id),
       db.prepare('INSERT INTO idempotency_keys(key,request_hash,order_id) VALUES (?,?,?)').bind(key, hash, id),
+      ...(testerHash?[
+        db.prepare('INSERT INTO test_checkout_orders(order_id,tester_hash) VALUES (?,?)').bind(id,testerHash),
+        db.prepare("INSERT INTO audit_log(id,actor_id,action,entity_type,entity_id,before_json,after_json) VALUES (?,?,'test_request.create','order',?,'{}',?)")
+          .bind(crypto.randomUUID(),`test-checkout:${testerHash}`,id,JSON.stringify({reference,fictional:true,source:'authenticated_test_checkout'})),
+      ]:[]),
     ]);
   } catch (error) {
     const duplicate = await existing(db, key, hash);

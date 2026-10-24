@@ -7,4 +7,4 @@ export type RequestInput = {
 export type QuoteLine = Selection & { name: string; unitPriceCents: number; totalCents: number; productionDays: number };
 export type Quote = { items: QuoteLine[]; subtotalCents: number; deliveryCents: null; totalCents: null };
 export type Receipt = Quote & { reference: string; requestStatus: 'received'; contractStatus: 'none'; createdAt: string };
-export type LocalConfig = { localRequests: boolean; turnstileMode?: string; siteKey?: string };
+export type LocalConfig = { localRequests: boolean; authenticatedTest?:boolean; turnstileMode?: string; siteKey?: string };
