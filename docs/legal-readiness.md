@@ -1,5 +1,10 @@
 # Juridische voorbereiding — concept 0.1
 
+Actuele aanvulling: Phase 4B is online uitsluitend als fictieve testomgeving;
+Phase 5 is lokaal voorbereid zonder uitrol. Zie [de actuele audit](phase-5-launch-readiness.md)
+en [de goedkeuringslijst](launch-approval-checklist.md). De eerdere fasebeschrijvingen
+hieronder zijn historisch; hun juridische open punten blijven ter beoordeling.
+
 Onderzocht op 24 oktober 2026. Dit is een implementatie- en beoordelingsdocument,
 geen goedkeuring van de juridische of fiscale positie van Casa Apero.
 Alleen lokaal op `develop`; geen push, productie-infrastructuur of orderontvangst.

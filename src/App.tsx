@@ -8,11 +8,12 @@ import { Cart } from './pages/Cart';
 import { Contact, NotFound, Ordering, Story } from './pages/StaticPages';
 import { Cookies, LegalNotice, Privacy, Terms, Withdrawal } from './pages/Legal';
 import { legalPages } from './data/legal';
-import { products } from './data/catalogue';
+import {useCatalogue} from './context/CatalogueContext';
 const LocalCheckout = import.meta.env.MODE === 'staging' ? null : lazy(() => import('./pages/LocalCheckout').then((module) => ({ default: module.LocalCheckout })));
 const RequestConfirmation = import.meta.env.MODE === 'staging' ? null : lazy(() => import('./pages/LocalCheckout').then((module) => ({ default: module.RequestConfirmation })));
 
 export function App() {
+  const {products}=useCatalogue();
   const { pathname } = useLocation();
   useEffect(() => {
     const title = ({ '/': 'Handgemaakt voor jouw aperomoment', '/collectie': 'De collectie', '/winkelmand': 'Winkelmand', '/bestellen': 'Bestellen & afspreken', '/ons-verhaal': 'Ons verhaal', '/contact': 'Contact', '/privacy': 'Privacy' } as Record<string, string>)[pathname]
@@ -20,7 +21,7 @@ export function App() {
       ?? legalPages.find((page) => page.path === pathname)?.title
       ?? products.find((product) => pathname === `/product/${product.slug}`)?.name ?? 'Pagina niet gevonden';
     document.title = `${legalPages.find((page) => page.path === pathname)?.title ?? title} | Casa Apero`;
-  }, [pathname]);
+  }, [pathname,products]);
   return <Routes><Route element={<Layout />}>
     <Route index element={<Home />} />
     <Route path="collectie" element={<Catalogue />} />

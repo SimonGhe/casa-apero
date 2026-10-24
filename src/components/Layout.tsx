@@ -1,14 +1,16 @@
+import {useCatalogue} from '../context/CatalogueContext';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Menu, ShoppingBag, X } from 'lucide-react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { shopSettings } from '../data/catalogue';
+
 import { business } from '../data/business';
 import { BrandLogo } from './BrandLogo';
 import { SocialLinks } from './SocialLinks';
 import { LegalNavigation } from '../pages/Legal';
 
 export function Layout() {
+  const {shopSettings,error:catalogueError}=useCatalogue();
   const { count, storageWarning } = useCart();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,7 +52,8 @@ export function Layout() {
       </div>
       {menuOpen && <nav id="mobile-nav" className="mobile-nav" aria-label="Mobiele navigatie"><NavLink to="/collectie">De collectie</NavLink><NavLink to="/ons-verhaal">Ons verhaal</NavLink><NavLink to="/bestellen">Zo bestel je</NavLink><NavLink to="/contact">Contact</NavLink></nav>}
     </header>
-    {shopSettings.ordersPaused && <div className="pause-banner" role="status">{shopSettings.pauseMessage}</div>}
+    {catalogueError&&<div className="pause-banner" role="alert">{catalogueError}</div>}
+    {!catalogueError&&shopSettings.ordersPaused && <div className="pause-banner" role="status">{shopSettings.pauseMessage}</div>}
     {storageWarning && <div className="storage-banner" role="status">Je browser kan de winkelmand niet bewaren. Houd dit tabblad open om je selectie te behouden.</div>}
     <main id="main-content" tabIndex={-1}><Outlet /></main>
     <footer className="site-footer">

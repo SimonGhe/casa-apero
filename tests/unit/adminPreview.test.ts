@@ -43,7 +43,7 @@ it('denies invalid scopes, signatures, expirations, identities and all alternate
  for(const host of ['https://casa-apero.com','https://admin.casa-apero.com:8443','https://casa-apero-admin-staging.example.workers.dev','https://casa-apero-staging.example.workers.dev','http://127.0.0.1:5185','https://other.example.com'])expect((await call('/api/admin/orders',{authenticated:true,host})).status,host).toBe(403);
 });
 it('cannot activate development login or public orders even with a valid preview identity',async()=>{
- for(const path of ['/api/admin/local-login','/api/admin/logout','/api/requests','/api/quote','/api/products','/api/receipt','/api/orders','/api/config','/cdn-cgi/local/explorer/api','/__debug'])expect((await call(path,{authenticated:true})).status,path).toBe(403);
+ for(const path of ['/api/admin/local-login','/api/admin/logout','/api/requests','/api/quote','/api/catalogue','/api/products','/api/receipt','/api/orders','/api/config','/cdn-cgi/local/explorer/api','/__debug'])expect((await call(path,{authenticated:true})).status,path).toBe(403);
  expect((await call('/api/admin/orders',{authenticated:true,settings:{APP_ENV:'local-admin',ADMIN_AUTH_MODE:'local-session'}})).status).toBe(403);
  await expect(deployedLogin()).rejects.toMatchObject({status:403});
 });

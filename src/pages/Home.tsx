@@ -1,12 +1,13 @@
 import { ArrowRight, Check, Hand, Leaf, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { products } from '../data/catalogue';
+import {useCatalogue} from '../context/CatalogueContext';
 import { ProductCard } from '../components/ProductCard';
 import { BrandLogo } from '../components/BrandLogo';
 import { SocialLinks } from '../components/SocialLinks';
 import { business } from '../data/business';
 
 export function Home() {
+  const {products}=useCatalogue();
   return <>
     <section className="hero">
       <img className="hero-photo" src="/assets/market-stand.png" alt="Het oorspronkelijke Casa Apero sfeerbeeld: een warme aperotafel met keramische schalen." fetchPriority="high" />
@@ -42,7 +43,7 @@ export function Home() {
     <section className="section content-width" id="zo-werkt-het">
       <div className="section-heading"><p className="eyebrow">Van keuze tot aperomoment</p><h2>Met aandacht, op bestelling.</h2></div>
       <div className="steps-grid">
-        <div><span className="step-number">01</span><h3>Kies jouw kommetjes</h3><p>Ontdek Olive, Dune Mini, Dune Grand en Aperitivo en stel jouw selectie samen.</p></div>
+        <div><span className="step-number">01</span><h3>Kies jouw kommetjes</h3><p>Ontdek onze collectie en stel jouw selectie samen.</p></div>
         <div><span className="step-number">02</span><h3>We maken & spreken af</h3><p>Alles wordt op bestelling gemaakt, met een geschatte productietijd van ongeveer 2 weken. Ons team bevestigt de werkelijke afspraak persoonlijk.</p></div>
         <div><span className="step-number">03</span><h3>Ophalen & genieten</h3><p>Je betaalt bij de afgesproken afhaling of levering, contant of via een goedgekeurde elektronische methode.</p></div>
       </div>

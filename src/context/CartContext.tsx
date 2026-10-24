@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { products, shopSettings } from '../data/catalogue';
+import {products as frozenProducts} from '../data/catalogue';
+import {useCatalogue} from './CatalogueContext';
 import { addItem, CART_STORAGE_KEY, CART_LIFETIME_MS, TIMED_CART_STORAGE_KEY, restoreTimedCart, resolveCart, setQuantity } from '../lib/cart';
 import type { CartItem, CartLine, StoredCart } from '../lib/cart';
 
@@ -9,6 +10,8 @@ type CartContextValue = {
   count: number;
   totalCents: number;
   storageWarning: boolean;
+  hasUnavailableItems:boolean;
+  removeUnavailable:()=>void;
   clear: () => void;
   add: (productId: string, variantId: string, quantity: number) => void;
   update: (productId: string, variantId: string, quantity: number) => void;
@@ -17,11 +20,12 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 
 function readCart(): StoredCart {
-  try { return restoreTimedCart(localStorage.getItem(TIMED_CART_STORAGE_KEY), products); }
+  try { return restoreTimedCart(localStorage.getItem(TIMED_CART_STORAGE_KEY), frozenProducts); }
   catch { return { items: [], expiresAt: 0 }; }
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const {products,shopSettings,ready}=useCatalogue();
   const [stored, setStored] = useState(readCart);
   const { items, expiresAt } = stored;
   const setItems = (change: (previous: CartItem[]) => CartItem[]) => setStored((previous) => ({
@@ -59,6 +63,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     count: lines.reduce((sum, line) => sum + line.quantity, 0),
     totalCents: lines.reduce((sum, line) => sum + line.totalCents, 0),
     storageWarning,
+    hasUnavailableItems:ready&&items.some(item=>!products.some(product=>product.id===item.productId&&product.variants.some(variant=>variant.id===item.variantId))),
+    removeUnavailable:()=>setItems(previous=>previous.filter(item=>products.some(product=>product.id===item.productId&&product.variants.some(variant=>variant.id===item.variantId)))),
     clear: () => setStored({ items: [], expiresAt: 0 }),
     add: (productId, variantId, count) => setItems((previous) => addItem(previous, productId, variantId, count, products, shopSettings.ordersPaused)),
     update: (productId, variantId, count) => setItems((previous) => setQuantity(previous, productId, variantId, count)),

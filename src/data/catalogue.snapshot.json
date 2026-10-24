@@ -1,0 +1,132 @@
+{
+  "products": [
+    {
+      "id": "olive",
+      "slug": "olive",
+      "name": "Olive",
+      "description": "Handgemaakt keramieken potje met een unieke groene binnenkant. Perfect voor dips, sausjes of kleine aperohapjes.",
+      "category": "Kommetjes",
+      "typeLabel": "Klein potje met groene binnenkant",
+      "images": [
+        {
+          "src": "/assets/market-stand.png",
+          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
+          "crop": "bowls",
+          "isPlaceholder": true
+        },
+        {
+          "src": "/assets/market-stand.png",
+          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
+          "crop": "table",
+          "isPlaceholder": true
+        }
+      ],
+      "variants": [
+        {
+          "id": "olive-standard",
+          "label": "Standaard",
+          "priceCents": 699
+        }
+      ],
+      "estimatedProductionDays": 14,
+      "ordersPaused": false
+    },
+    {
+      "id": "dune-mini",
+      "slug": "dune-mini",
+      "name": "Dune Mini",
+      "description": "Handgemaakt keramieken potje in een zachte beige tint met leuk detail. Ideaal voor olijven, nootjes of andere kleine hapjes.",
+      "category": "Kommetjes",
+      "typeLabel": "Klein beige potje",
+      "images": [
+        {
+          "src": "/assets/market-stand.png",
+          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
+          "crop": "detail",
+          "isPlaceholder": true
+        },
+        {
+          "src": "/assets/market-stand.png",
+          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
+          "crop": "bowls",
+          "isPlaceholder": true
+        }
+      ],
+      "variants": [
+        {
+          "id": "dune-mini-standard",
+          "label": "Standaard",
+          "priceCents": 699
+        }
+      ],
+      "estimatedProductionDays": 14,
+      "ordersPaused": false
+    },
+    {
+      "id": "dune-grand",
+      "slug": "dune-grand",
+      "name": "Dune Grand",
+      "description": "Handgemaakt keramieken potje met een natuurlijke beige uitstraling. Perfect voor grotere porties snacks of om te delen tijdens een aperomoment.",
+      "category": "Kommetjes",
+      "typeLabel": "Groot beige potje",
+      "images": [
+        {
+          "src": "/assets/market-stand.png",
+          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
+          "crop": "table",
+          "isPlaceholder": true
+        },
+        {
+          "src": "/assets/market-stand.png",
+          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
+          "crop": "detail",
+          "isPlaceholder": true
+        }
+      ],
+      "variants": [
+        {
+          "id": "dune-grand-standard",
+          "label": "Standaard",
+          "priceCents": 1299
+        }
+      ],
+      "estimatedProductionDays": 14,
+      "ordersPaused": false
+    },
+    {
+      "id": "aperitivo",
+      "slug": "aperitivo",
+      "name": "Aperitivo",
+      "description": "Handgemaakte keramieken aperoschalen, ideaal om hapjes stijlvol te serveren tijdens gezellige momenten met vrienden en familie.",
+      "category": "Aperoschalen",
+      "typeLabel": "Keramieken aperoschaal",
+      "images": [
+        {
+          "src": "/assets/market-stand.png",
+          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
+          "crop": "platter",
+          "isPlaceholder": true
+        },
+        {
+          "src": "/assets/market-stand.png",
+          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
+          "crop": "table",
+          "isPlaceholder": true
+        }
+      ],
+      "variants": [
+        {
+          "id": "aperitivo-standard",
+          "label": "Standaard",
+          "priceCents": 2599
+        }
+      ],
+      "estimatedProductionDays": 14,
+      "ordersPaused": false
+    }
+  ],
+  "shopSettings": {
+    "ordersPaused": false,
+    "pauseMessage": "We nemen even de tijd voor onze lopende bestellingen. Nieuwe bestellingen zijn tijdelijk gepauzeerd."
+  }
+}

@@ -1,22 +1,28 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Clock3, Hand, Pause, ShoppingBag } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import { leadTime, money, products, shopSettings } from '../data/catalogue';
+import { leadTime, money } from '../data/catalogue';
 import { ProductPhoto } from '../components/ProductPhoto';
 import { ProductCard } from '../components/ProductCard';
 import { QuantityInput } from '../components/QuantityInput';
 import { useCart } from '../context/CartContext';
+import {useCatalogue} from '../context/CatalogueContext';
+import type {Product} from '../data/catalogue';
 import { MAX_QUANTITY } from '../lib/cart';
 import { NotFound } from './StaticPages';
 
 export function ProductDetail() {
   const { slug } = useParams();
+  const {products,loading,error}=useCatalogue();
+  if(loading)return <p className="content-width page-space" role="status">Collectie laden…</p>;
+  if(error)return <p className="content-width page-space" role="alert">{error}</p>;
   const product = products.find((entry) => entry.slug === slug);
   return product ? <ProductView key={product.id} product={product} /> : <NotFound />;
 }
 
-function ProductView({ product }: { product: (typeof products)[number] }) {
+function ProductView({ product }: { product: Product }) {
   const cart = useCart();
+  const {products,shopSettings}=useCatalogue();
   const [variantId, setVariantId] = useState(product.variants[0].id);
   const [count, setCount] = useState(1);
   const [photoIndex, setPhotoIndex] = useState(0);

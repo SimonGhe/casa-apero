@@ -37,13 +37,8 @@ test('catalogue filters, sorting and no-results recovery', async ({ page }) => {
 });
 
 test('paused product and invalid product cannot be ordered', async ({ page }) => {
-  // Test-only response fixture: the official catalogue itself stays open.
-  await page.route(/\/src\/data\/catalogue\.ts(?:\?.*)?$/, async (route) => {
-    const response = await route.fetch();
-    const source = await response.text();
-    expect(source).toMatch(/ordersPaused:\s*false/);
-    await route.fulfill({ response, body: source.replace(/ordersPaused:\s*false/, 'ordersPaused: true') });
-  });
+  // Published product projection fixture, using the same contract as local D1.
+  await page.route('**/api/catalogue',async route=>{const response=await route.fetch();const data=await response.json();data.products.find(p=>p.id==='olive').ordersPaused=true;await route.fulfill({response,json:data});});
   await page.goto('/product/olive');
   await expect(page.getByRole('button', { name: 'Tijdelijk gepauzeerd', exact: true })).toBeDisabled();
   await page.goto('/product/bestaat-niet');

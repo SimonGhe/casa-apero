@@ -37,7 +37,7 @@ test('staging serves branded products, navigation, cart and legal pages without 
 test('staging blocks APIs and development routes and discourages indexing', async ({ request }) => {
   const robots = await request.get('/robots.txt');
   expect(await robots.text()).toContain('Disallow: /');
-  for (const path of ['/api', '/api/config', '/api/products', '/api/quote', '/api/requests', '/api/orders', '/api/receipt', '/api/admin', '/api/demo']) {
+  for (const path of ['/api', '/api/config', '/api/catalogue', '/api/products', '/api/quote', '/api/requests', '/api/orders', '/api/receipt', '/api/admin', '/api/demo']) {
     const get = await request.get(path);
     expect(get.status()).toBe(403);
     expect(get.headers()['x-robots-tag']).toContain('noindex');

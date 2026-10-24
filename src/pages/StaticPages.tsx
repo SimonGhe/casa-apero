@@ -16,10 +16,10 @@ export function Ordering() {
       <div className="prose">
         <h2>Zo werkt bestellen</h2>
         <ol className="ordering-steps">
-          <li><strong>Kies jouw potjes en schalen</strong><p>Stel je winkelmand samen met Olive, Dune Mini, Dune Grand of Aperitivo en kies je aantallen.</p></li>
+          <li><strong>Kies jouw potjes en schalen</strong><p>Kies uit de actuele collectie en pas de aantallen aan in je winkelmand.</p></li>
           <li><strong>Geef je voorkeur door</strong><p>Bij de opening kun je zonder account bestellen. Je geeft je naam en e-mailadres door, eventueel je telefoonnummer en je voorkeur voor afhaling of levering.</p></li>
-          <li><strong>Wij maken je bestelling</strong><p>Alles is handgemaakt op bestelling. {business.productionTime}</p></li>
-          <li><strong>We bevestigen de afspraak</strong><p>Afhaling gebeurt op afspraak in de omgeving van {business.pickupArea}. Je kunt een voorkeursdatum vragen, maar die is pas afgesproken nadat ons team de datum heeft bevestigd.</p><p>{business.delivery}</p></li>
+          <li><strong>We spreken eerst alles af</strong><p>Ons team bevestigt beschikbaarheid, alle kosten, afhaling of levering en de planning. Je gaat pas akkoord nadat je het volledige aanbod hebt ontvangen. Daarna ontvang je de afspraken en voorwaarden in een vorm die je kunt bewaren.</p><p>Afhaling gebeurt op afspraak in de omgeving van {business.pickupArea}. Een voorkeursdatum is nog geen bevestigde afspraak. {business.delivery}</p></li>
+          <li><strong>Daarna maken we je bestelling</strong><p>We starten pas na de bevestigingsstap. Alles is handgemaakt op bestelling. {business.productionTime}</p></li>
           <li><strong>Betaal bij afhaling of levering</strong><p>{business.payment} De beschikbare elektronische methode spreken we vooraf af. Er is geen online betaling.</p></li>
         </ol>
         <div className="notice"><strong>De webshop is nog in voorbereiding.</strong><p>De producten en prijzen zijn bevestigd. Je kunt je winkelmand samenstellen, maar het bestelformulier is nog niet actief. Er worden geen bestellingen of contactgegevens verstuurd en er worden geen automatische bevestigingsmails verzonden.</p></div>

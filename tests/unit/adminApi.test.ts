@@ -49,7 +49,7 @@ describe('admin API on local D1',()=>{
  });
  it('explains incomplete confirmations and never commits their status or notes',async()=>{
   const id=await seed(),base={version:0,status:'confirmed',internalNotes:'Must not commit',confirmedArrangements:'Fictief afhalen',deliveryCents:0,confirmationEvidence:'Fictief bewijs',durableProvidedAt:new Date().toISOString()};
-  for(const [patch,message] of [[{deliveryCents:null},'leveringskosten'],[{confirmationEvidence:''},'bewijs'],[{durableProvidedAt:''},'Verstrekt op'],[{durableProvidedAt:'2099-01-01T00:00:00Z'},'toekomst']] as const){
+  for(const [patch,message] of [[{confirmedArrangements:'0'},'afhaal- of leverafspraken'],[{deliveryCents:null},'leveringskosten'],[{confirmationEvidence:''},'bewijs'],[{durableProvidedAt:''},'Verstrekt op'],[{durableProvidedAt:'2099-01-01T00:00:00Z'},'toekomst']] as const){
    const response=await api(`orders/${id}`,{...base,...patch});expect(response.status).toBe(400);expect(JSON.stringify(await response.json())).toContain(message);
   }
   expect((await json<OrderDetail>(`orders/${id}`)).order).toMatchObject({workflow_status:'new',version:0,internal_notes:''});

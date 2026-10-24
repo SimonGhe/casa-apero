@@ -2,6 +2,7 @@ import type { Quote, QuoteLine, Receipt, RequestInput, Selection } from '../shar
 import { ApiError, validateRequest, validateSelection } from './validation';
 import { isLoopback, verifyTurnstile } from './turnstile';
 import type { TurnstileEnv } from './turnstile';
+import {readCatalogue} from './catalogue';
 
 export interface Env extends TurnstileEnv { DB?: D1Database; ASSETS?: Fetcher }
 const LEGAL_VERSION = 'concept-0.1-2026-10-24';
@@ -108,6 +109,7 @@ export default {
       if (url.pathname === '/api/config' && request.method === 'GET') return json({ localRequests: local, ...(local ? { turnstileMode: env.TURNSTILE_MODE, siteKey: env.TURNSTILE_SITE_KEY } : {}) });
       if (!local || !env.DB) throw new ApiError(403, 'checkout_disabled', 'Aanvragen zijn alleen lokaal met fictieve gegevens beschikbaar.');
       const db = env.DB;
+      if(url.pathname==='/api/catalogue'&&request.method==='GET')return json(await readCatalogue(db));
       if (request.method === 'POST') {
         if (request.headers.get('Origin') !== url.origin || request.headers.get('Sec-Fetch-Site') === 'cross-site') throw new ApiError(403, 'origin_rejected', 'Ongeldige herkomst.');
         await rateLimit(db, request);

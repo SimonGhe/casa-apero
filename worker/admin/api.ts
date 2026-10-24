@@ -61,7 +61,7 @@ async function updateOrder(db: D1Database, id: string, input: Record<string,unkn
  const arrangements = adminText(input.confirmedArrangements ?? before.confirmed_arrangements,1000);
  const evidence = adminText(input.confirmationEvidence ?? before.confirmation_evidence,1000);
  const confirming = before.workflow_status === 'new' && state === 'confirmed';
- if(state!=='new'&&state!=='cancelled'&&!arrangements) fail('Bevestigde afspraken mogen niet ontbreken.');
+ if(state!=='new'&&state!=='cancelled'&&arrangements.length<10) fail('Vul volledige afhaal- of leverafspraken in: plaats en afgesproken moment of contactprocedure (minstens 10 tekens).');
  let delivery = before.delivery_cents;
  let durableAt: string|null = null;
  if (confirming) {

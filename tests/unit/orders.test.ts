@@ -86,6 +86,18 @@ describe('local Worker with actual simulated D1', () => {
     expect((await call('requests', { ...input(), notes: 'changed' }, key)).status).toBe(409);
     expect(await env.DB!.prepare('SELECT COUNT(*) AS count FROM orders').first('count')).toBe(1);
   });
+  it('rejects a price change during submission and preserves the subsequently accepted snapshot',async()=>{
+    const transport=vi.spyOn(globalThis,'fetch').mockImplementation(async()=>{await env.DB!.exec("UPDATE products SET price_cents=799 WHERE id='olive';");return Response.json({success:true,hostname:'127.0.0.1',action:'order-request'});});
+    const settings={TURNSTILE_MODE:'siteverify',TURNSTILE_SECRET_KEY:'test-secret'},key=crypto.randomUUID();
+    try{
+      const conflict=await call('requests',input(),key,{},settings);expect(conflict.status).toBe(409);expect(await conflict.json()).toMatchObject({error:{code:'price_changed'}});
+      expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM orders').first('n')).toBe(0);
+      expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM idempotency_keys').first('n')).toBe(0);
+      expect((await call('requests',{...input(),expectedSubtotalCents:1598},key,{},settings)).status).toBe(201);
+      await env.DB!.exec("UPDATE products SET price_cents=899 WHERE id='olive';");
+      const response=await call('receipt',{},undefined,{Authorization:`Bearer ${input().receiptToken}`});expect(await response.json()).toMatchObject({subtotalCents:1598,items:[{unitPriceCents:799}]});
+    }finally{transport.mockRestore();}
+  });
   it('requires a receipt capability and never exposes customer or admin endpoints', async () => {
     await call('requests', input());
     expect((await call('receipt', {})).status).toBe(404);

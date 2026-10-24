@@ -68,6 +68,28 @@ test('a lost success response retries with the same key and cannot create duplic
   expect(keys[0]).toBe(keys[1]);
   expect(references[0]).toBe(references[1]);
 });
+test('reloading after a lost success response recovers the receipt without submitting again',async({page})=>{
+ await selectAndFill(page);let posts=0,reference='';
+ await page.route('**/api/requests',async route=>{posts++;const response=await route.fetch();reference=(await response.json()).reference;await route.abort('failed');});
+ await page.getByRole('button',{name:'Vrijblijvende testaanvraag versturen',exact:true}).click();await expect(page.getByRole('alert')).toContainText('Geen verbinding');
+ const stored=await page.evaluate(()=>JSON.stringify({local:{...localStorage},session:{...sessionStorage}}));expect(stored).not.toContain('browser@example.invalid');expect(stored).not.toContain('Fictieve Testklant');
+ await page.reload();await expect(page.getByTestId('order-reference')).toHaveText(reference);expect(posts).toBe(1);
+ expect(await page.evaluate(()=>sessionStorage.getItem('casa-apero.local-attempt'))).toBeNull();
+});
+test('requires an explicit pickup or delivery preference before submitting',async({page})=>{
+ await page.goto('/product/olive');await page.getByRole('button',{name:'In winkelmand',exact:true}).click();await page.goto('/bestellen/lokaal');
+ await page.getByLabel('Naam',{exact:true}).fill('Fictieve Voorkeurtest');await page.getByLabel('E-mailadres',{exact:true}).fill('preference@example.invalid');
+ await page.getByRole('checkbox',{name:/informatie gelezen/}).check();await page.getByRole('checkbox',{name:/uitsluitend fictieve/}).check();
+ await page.getByRole('button',{name:'Vrijblijvende testaanvraag versturen',exact:true}).click();await expect(page.getByLabel('Afhaling of levering')).toBeFocused();
+});
+test('a changed price requires checking the updated quote and acknowledging again',async({page})=>{
+ await selectAndFill(page);
+ await page.route('**/api/requests',route=>route.fulfill({status:409,json:{error:{code:'price_changed',message:'De prijs is gewijzigd. Controleer het overzicht.'}}}));
+ await page.route('**/api/quote',async route=>{const response=await route.fetch(),data=await response.json();data.items[0].unitPriceCents=799;data.items[0].totalCents=1598;data.subtotalCents=1598;await route.fulfill({response,json:data});});
+ await page.getByRole('button',{name:'Vrijblijvende testaanvraag versturen',exact:true}).click();
+ await expect(page.getByRole('alert')).toContainText('prijs is gewijzigd');await expect(page.getByRole('region',{name:'Serverberekend overzicht'})).toContainText('15,98');
+ await expect(page.getByRole('checkbox',{name:/informatie gelezen/})).not.toBeChecked();
+});
 
 test('API failure keeps the selection and public mode has no active form', async ({ page }) => {
   await page.route('**/api/quote', (route) => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { message: 'Test: database tijdelijk niet beschikbaar.' } }) }));

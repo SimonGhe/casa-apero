@@ -46,10 +46,11 @@ test('product edits and pauses affect local D1 and restore original values after
  await login(page);const original=(await (await page.request.get('/api/admin/products')).json() as Array<Record<string,unknown>>).find(p=>p.id==='olive')!;
  try{
   await page.getByRole('button',{name:'Producten',exact:true}).click();const form=page.locator('form').filter({has:page.getByRole('heading',{name:'Olive',exact:true})});
-  await form.getByLabel('Beschrijving',{exact:true}).fill('Fictieve lokale producttekst');await form.getByLabel('Product gepauzeerd').check();await form.getByRole('button',{name:'Product bewaren'}).click();
+  await form.getByRole('textbox',{name:'Beschrijving',exact:true}).fill('Fictieve lokale producttekst');await form.getByLabel('Verkoopprijs EUR',{exact:true}).fill('7,99');await form.getByLabel('Product gepauzeerd').check();await form.getByRole('button',{name:'Product bewaren'}).click();
   await expect(form.getByLabel('Product gepauzeerd')).toBeChecked();
   await expect.poll(async()=>{const p=await (await page.request.get('/api/admin/products')).json() as Array<{id:string;orders_paused:number}>;return p.find(x=>x.id==='olive')?.orders_paused;}).toBe(1);
   await expect.poll(async()=>{const quote=await page.request.post('http://127.0.0.1:5173/api/quote',{headers:{Origin:'http://127.0.0.1:5173'},data:{items:[{productId:'olive',variantId:'olive-standard',quantity:1}]}});return quote.status();}).toBe(409);
+  const storefront=await page.context().newPage();try{await storefront.goto('http://127.0.0.1:5173/product/olive');await expect(storefront.locator('main')).toContainText('Fictieve lokale producttekst');await expect(storefront.locator('main')).toContainText('7,99');await expect(storefront.getByRole('button',{name:'Tijdelijk gepauzeerd',exact:true})).toBeDisabled();}finally{await storefront.close();}
   await page.getByRole('button',{name:'Alle aanvragen pauzeren'}).click();await expect(page.getByRole('button',{name:'Aanvragen hervatten'})).toBeVisible();
  }finally{
   const current=(await (await page.request.get('/api/admin/products')).json() as Array<Record<string,unknown>>).find(p=>p.id==='olive')!;
