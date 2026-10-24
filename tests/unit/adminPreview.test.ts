@@ -5,6 +5,7 @@ import {readFile} from 'node:fs/promises';
 import previewWorker from '../../worker/admin-preview';
 import type {PreviewEnv} from '../../worker/admin-preview';
 import {localLogin as deployedLogin} from '../../worker/admin/auth.deployed';
+import {limitAdminWrites,ADMIN_WRITE_LIMIT} from '../../worker/admin/write-rate-limit';
 
 const origin='https://admin.casa-apero.com',issuer='https://preview-fixture.cloudflareaccess.com',audience='preview-audience';
 let mf:Miniflare,env:PreviewEnv,privateKey:CryptoKey,jwks:{keys:Record<string,unknown>[]};
@@ -57,4 +58,22 @@ it('defaults to read-only and allows only separately enabled fictional mutations
  const result=await call(`/api/admin/orders/${id}`,{authenticated:true,body,settings:{ADMIN_WRITES_ENABLED:'true'}});expect(result.status).toBe(200);
  expect(await env.DB!.prepare('SELECT actor_id FROM audit_log').first('actor_id')).toBe('fictional-student');
  expect((await call(`/api/admin/orders/${id}`,{authenticated:true,body:{...body,version:1},settings:{ADMIN_WRITES_ENABLED:'true'},headers:{Origin:'https://evil.invalid'}})).status).toBe(403);
+});
+it('throttles verified subjects independently and expires counters without storing identities',async()=>{
+ const db=env.DB!,now=600000;
+ for(let n=0;n<ADMIN_WRITE_LIMIT;n++)await limitAdminWrites(db,'fictional-subject',now);
+ await expect(limitAdminWrites(db,'fictional-subject',now)).rejects.toMatchObject({status:429});
+ await expect(limitAdminWrites(db,'another-subject',now)).resolves.toBeUndefined();
+ const rows=await db.prepare('SELECT bucket FROM rate_limits').all<{bucket:string}>();
+ expect(JSON.stringify(rows.results)).not.toContain('fictional-subject');
+ await expect(limitAdminWrites(db,'fictional-subject',now+180000)).resolves.toBeUndefined();
+ expect(await db.prepare('SELECT COUNT(*) AS n FROM rate_limits').first('n')).toBe(1);
+});
+it('denies forged write requests before any rate counter or audit modification',async()=>{
+ const body={version:0,status:'new',internalNotes:'Must not persist'},path='/api/admin/orders/40000000-0000-4000-8000-000000000001';
+ for(const options of [{},{authenticated:true,claims:{email:'intruder@example.invalid'}},{authenticated:true,claims:{exp:1}},{authenticated:true,headers:{Origin:'https://evil.invalid'}},{authenticated:true,headers:{'Sec-Fetch-Site':'cross-site'}}]){
+  expect([401,403]).toContain((await call(path,{...options,body,settings:{ADMIN_WRITES_ENABLED:'true'}})).status);
+ }
+ expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM audit_log').first('n')).toBe(0);
+ expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM rate_limits').first('n')).toBe(0);
 });

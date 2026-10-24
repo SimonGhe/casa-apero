@@ -17,26 +17,27 @@ test('order search, confirmation, production, payment, notes and audit work on d
  const {reference}=await seed(page);await login(page);
  await page.getByLabel('Zoek op naam of referentie').fill(reference);await page.getByRole('button',{name:`Open ${reference}`}).click();
  await expect(page.getByRole('heading',{name:reference,exact:true})).toBeVisible();
- await page.getByRole('textbox',{name:'Interne notities',exact:true}).fill('Fictieve productienotitie');
- await page.getByLabel('Bevestigde afhaal- of leverafspraken').fill('TEST — afhalen in Brugge na afspraak.');
- await page.getByRole('combobox',{name:'Status',exact:true}).selectOption('confirmed');
- await page.getByLabel('Leveringskosten EUR',{exact:true}).fill('0');
- await page.getByLabel('Bewijs van duurzame bevestiging').fill('Fictief testbewijs, niets naar een klant verstuurd.');
- await page.getByLabel('Verstrekt op').fill('2026-01-01T12:00');
- await page.getByRole('button',{name:'Status en afspraken bewaren'}).click();
- await expect(page.getByRole('combobox',{name:'Status',exact:true})).toHaveValue('confirmed');
- await expect(page.getByLabel('Ontvangen bedrag EUR')).toBeEnabled();
- for(const state of ['in_production','ready','completed']){
-  await page.getByRole('combobox',{name:'Status',exact:true}).selectOption(state);await page.getByRole('button',{name:'Status en afspraken bewaren'}).click();
-  await expect(page.getByRole('textbox',{name:'Interne notities',exact:true})).toHaveValue('Fictieve productienotitie');
-  await expect(page.getByRole('combobox',{name:'Status',exact:true})).toHaveValue(state);
-  await expect(page.getByRole('button',{name:'Status en afspraken bewaren'})).toBeEnabled();
+ await page.getByRole('textbox',{name:'Notitie voor het team',exact:true}).fill('Fictieve productienotitie');
+ await page.getByLabel('Afhalen of leveren',{exact:true}).fill('TEST — afhalen in Brugge na afspraak.');
+ await page.getByRole('button',{name:'Bestelling bevestigen',exact:true}).click();
+ await page.getByLabel('Extra afhaal- of leveringskosten EUR',{exact:true}).fill('0');
+ await page.getByLabel('Hoe heb je de afspraken gedeeld?').fill('Fictief testbewijs, niets naar een klant verstuurd.');
+ await page.getByLabel('Wanneer heb je ze gedeeld?').fill('2026-01-01T12:00');
+ await page.getByRole('button',{name:'Bevestiging bewaren'}).click();
+ await expect(page.getByRole('button',{name:'Productie starten',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Betaling ontvangen',exact:true})).toBeEnabled();
+ for(const action of ['Productie starten','Klaar voor afhaling','Bestelling afronden']){
+  await page.getByRole('button',{name:action,exact:true}).click();
+  await expect(page.getByRole('status')).toContainText('Gelukt!');
+  await expect(page.getByRole('textbox',{name:'Notitie voor het team',exact:true})).toHaveValue('Fictieve productienotitie');
  }
- await page.getByLabel('Ontvangen bedrag EUR').fill('6,99');await page.getByLabel('Betaalmethode',{exact:true}).fill('Fictief contant');
- await page.getByRole('button',{name:'Betaling registreren'}).click();
- await expect(page.getByText('Status: Betaald. Dit voert geen betaling uit.')).toBeVisible();
- await page.getByLabel('Totaal terugbetaald EUR').fill('1,00');await page.getByRole('button',{name:'Betaling registreren'}).click();
- await expect(page.getByText('Status: Deels terugbetaald. Dit voert geen betaling uit.')).toBeVisible();
+ await page.getByRole('button',{name:'Betaling ontvangen',exact:true}).click();
+ await page.getByLabel('Ontvangen bedrag EUR').fill('6,99');await page.getByLabel('Hoe is er betaald?').fill('Fictief contant');
+ await page.getByRole('button',{name:'Betaling bewaren',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('Betaling opgeslagen: Betaald');
+ await page.getByText('Meer opties',{exact:true}).click();
+ await page.getByLabel('Bedrag terugbetaling EUR').fill('1,00');await page.getByRole('button',{name:'Terugbetaling bewaren',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('Deels terugbetaald');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:testInfo.outputPath('admin-order.png'),fullPage:true});
  await page.getByRole('button',{name:'Wijzigingslog',exact:true}).click();await expect(page.locator('.admin-audit')).toContainText('payment.update');

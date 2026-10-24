@@ -47,6 +47,14 @@ describe('admin API on local D1',()=>{
   expect(detail.order.workflow_status).toBe('completed');expect(detail.audit.length).toBe(4);
   expect((await api(`orders/${id}`,{version:detail.order.version,status:'new'})).status).toBe(400);
  });
+ it('explains incomplete confirmations and never commits their status or notes',async()=>{
+  const id=await seed(),base={version:0,status:'confirmed',internalNotes:'Must not commit',confirmedArrangements:'Fictief afhalen',deliveryCents:0,confirmationEvidence:'Fictief bewijs',durableProvidedAt:new Date().toISOString()};
+  for(const [patch,message] of [[{deliveryCents:null},'leveringskosten'],[{confirmationEvidence:''},'bewijs'],[{durableProvidedAt:''},'Verstrekt op'],[{durableProvidedAt:'2099-01-01T00:00:00Z'},'toekomst']] as const){
+   const response=await api(`orders/${id}`,{...base,...patch});expect(response.status).toBe(400);expect(JSON.stringify(await response.json())).toContain(message);
+  }
+  expect((await json<OrderDetail>(`orders/${id}`)).order).toMatchObject({workflow_status:'new',version:0,internal_notes:''});
+  expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM audit_log').first('n')).toBe(0);
+ });
  it('only one simultaneous order edit commits its audit record',async()=>{
   const id=await seed();const responses=await Promise.all([api(`orders/${id}`,{version:0,status:'new',internalNotes:'one'}),api(`orders/${id}`,{version:0,status:'new',internalNotes:'two'})]);
   expect(responses.map((r)=>r.status).sort()).toEqual([200,409]);expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM audit_log').first('n')).toBe(1);
@@ -59,12 +67,23 @@ describe('admin API on local D1',()=>{
   const payment={version:detail.order.version,amountPaidCents:1398,amountRefundedCents:0,method:'Fictief contant'};
   detail=await json<OrderDetail>(`orders/${id}/payment`,payment);expect(detail.order.payment_status).toBe('paid');
   expect((await api(`orders/${id}/payment`,payment)).status).toBe(409);
+  expect((await api(`orders/${id}/payment`,{...payment,version:detail.order.version})).status).toBe(400);
   expect(await json('report')).toMatchObject({revenueCents:1398,estimatedProfitCents:798});
   detail=await json<OrderDetail>(`orders/${id}/payment`,{version:detail.order.version,amountPaidCents:1398,amountRefundedCents:699,method:'Fictief contant'});
   expect(detail.order.payment_status).toBe('partially_refunded');expect(await json('report')).toMatchObject({revenueCents:699,knownCostCents:300,estimatedProfitCents:399});
   expect((await api(`orders/${id}/payment`,{version:detail.order.version,amountPaidCents:0,amountRefundedCents:0,method:''})).status).toBe(400);
   await json(`orders/${id}/payment`,{version:detail.order.version,amountPaidCents:1398,amountRefundedCents:1398,method:'Fictief contant'});
   expect(await json('report')).toMatchObject({revenueCents:0,estimatedProfitCents:0});
+ });
+ it('shows cancelled cash awaiting refund and excludes cancelled unpaid requests from revenue',async()=>{
+  const unpaid=await seed();await json(`orders/${unpaid}`,{version:0,status:'cancelled'});
+  expect(await json('report')).toMatchObject({revenueCents:0,cancelledOutstandingRefundCents:0});
+  const id=await seed();let detail=await confirm(id);
+  detail=await json<OrderDetail>(`orders/${id}/payment`,{version:detail.order.version,amountPaidCents:1398,amountRefundedCents:0,method:'Fictief'});
+  detail=await json<OrderDetail>(`orders/${id}`,{version:detail.order.version,status:'cancelled'});
+  expect(await json('report')).toMatchObject({revenueCents:1398,cancelledOutstandingRefundCents:1398});
+  await json(`orders/${id}/payment`,{version:detail.order.version,amountPaidCents:1398,amountRefundedCents:1398,method:'Fictieve terugbetaling'});
+  expect(await json('report')).toMatchObject({revenueCents:0,cancelledOutstandingRefundCents:0});
  });
  it('preserves unknown costs and immutable order prices when products are edited',async()=>{
   const id=await seed();await confirm(id);

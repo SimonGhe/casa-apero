@@ -1,5 +1,6 @@
 export const workflowLabels = { new: 'Nieuw', confirmed: 'Bevestigd', in_production: 'In productie', ready: 'Klaar voor afhaling', completed: 'Afgerond', cancelled: 'Geannuleerd' } as const;
 export type Workflow = keyof typeof workflowLabels;
+export const workflowTransitions:Record<Workflow,readonly Workflow[]> = { new:['confirmed','cancelled'],confirmed:['in_production','cancelled'],in_production:['ready','cancelled'],ready:['completed','cancelled'],completed:[],cancelled:[] };
 export const paymentLabels = { unpaid: 'Onbetaald', paid: 'Betaald', partially_refunded: 'Deels terugbetaald', refunded: 'Terugbetaald' } as const;
 export type PaymentState = keyof typeof paymentLabels;
 export type AdminOrder = {
@@ -14,5 +15,5 @@ export type AuditRow = { id: string; actor_id: string; action: string; entity_ty
 export type OrderDetail = { order: AdminOrder; items: AdminItem[]; audit: AuditRow[] };
 export type AdminProduct = { id: string; name: string; description: string; price_cents: number; cost_cents: number | null; production_days: number; orders_paused: number; published: number; version: number };
 export type FinancialEvent = { entity_type: string; entity_id: string; amount_cents: number; cost_cents: number | null; accounting_date: string; category: string };
-export type Report = { revenueCents: number; orderRevenueCents: number; eventRevenueCents: number; knownCostCents: number; knownProfitCents: number; estimatedProfitCents: number | null; unknownCostGroups: number };
+export type Report = { revenueCents: number; orderRevenueCents: number; eventRevenueCents: number; knownCostCents: number; knownProfitCents: number; estimatedProfitCents: number | null; unknownCostGroups: number; cancelledOutstandingRefundCents?:number };
 export type EventSale = { id: string; event_name: string; event_date: string; notes: string; status: string; total_cents: number; cost_cents: number | null; version: number };

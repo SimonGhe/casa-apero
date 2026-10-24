@@ -34,13 +34,12 @@ preview build, compiled workerd/JWT verification, two desktop/mobile preview
 browser tests and dependency audit passed. Those local JWT tests are not a
 replacement for an actual authenticated online login.
 
-**Actual OTP login and authenticated online API verification are PENDING.**
-The user requested a handoff immediately after deployment. Keep the preview
-read-only, have the owner enter the OTP in their own browser, and verify the
-session API returns the expected identity, local=false, preview=true and
-writesEnabled=false before accepting the online authentication result. Do not
-ask for PINs, cookies or JWTs in chat. Unauthorized-identity and expiry checks
-against the live Access path are also not yet claimed as passed.
+**Actual OTP login was subsequently verified by the owner.** The owner reported
+the correct authenticated email, local=false, preview=true, writesEnabled=false,
+and the fictional order visible with editing disabled. Phase 4B explicitly
+authorizes isolated staging writes; see [the Phase 4B record](phase-4b-admin-writes.md).
+Unauthorized-identity and expiry checks against the live Access path are not
+claimed as passed solely from that owner login. Never share PINs, cookies or JWTs.
 
 The local preparation notes below describe the earlier approval state and are
 retained as implementation history; this deployment record supersedes their

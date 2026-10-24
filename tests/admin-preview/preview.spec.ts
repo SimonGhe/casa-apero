@@ -15,7 +15,7 @@ test('signed local fixture loads compiled admin preview without a simulated logi
  await expect(page.getByRole('button',{name:'Lokale testbeheerder starten'})).toHaveCount(0);
  await page.getByRole('button',{name:'Open TEST-ADMIN-PREVIEW-001'}).click();
  await expect(page.getByRole('heading',{name:'TEST-ADMIN-PREVIEW-001',exact:true})).toBeVisible();
- await expect(page.getByRole('button',{name:'Status en afspraken bewaren'})).toBeDisabled();
+ await expect(page.getByRole('button',{name:'Bestelling bevestigen',exact:true})).toBeDisabled();
  await page.getByRole('button',{name:'Producten',exact:true}).click();
  await expect(page.getByRole('button',{name:'Alle aanvragen pauzeren'})).toHaveCount(0);
  await expect(page.getByRole('button',{name:'Aanvragen hervatten'})).toBeDisabled();

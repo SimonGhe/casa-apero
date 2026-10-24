@@ -1,4 +1,5 @@
 import type { FinancialEvent, Report, Workflow } from '../../shared/admin';
+import { workflowTransitions } from '../../shared/admin';
 import { ApiError } from '../validation';
 export const fail = (message: string): never => { throw new ApiError(400, 'invalid_admin_input', message); };
 export function adminText(value: unknown, max = 2000, required = false): string {
@@ -15,9 +16,8 @@ export function date(value: unknown): string {
  return input;
 }
 export const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Brussels' });
-const transitions: Record<Workflow, Workflow[]> = { new: ['confirmed','cancelled'], confirmed: ['in_production','cancelled'], in_production: ['ready','cancelled'], ready: ['completed','cancelled'], completed: [], cancelled: [] };
 export function transition(from: Workflow, to: unknown): Workflow {
- if (to !== from && !transitions[from]?.includes(to as Workflow)) fail('Deze statusovergang is niet toegestaan.');
+ if (to !== from && !workflowTransitions[from]?.includes(to as Workflow)) fail('Deze statusovergang is niet toegestaan.');
  return to as Workflow;
 }
 export function report(events: FinancialEvent[]): Report {

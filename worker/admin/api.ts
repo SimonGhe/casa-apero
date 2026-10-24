@@ -65,9 +65,11 @@ async function updateOrder(db: D1Database, id: string, input: Record<string,unkn
  let delivery = before.delivery_cents;
  let durableAt: string|null = null;
  if (confirming) {
+   if(input.deliveryCents===null||input.deliveryCents===undefined)fail('Vul de leveringskosten in, ook wanneer die 0 zijn.');
    delivery = cents(input.deliveryCents,100000);
-   const dateString = adminText(input.durableProvidedAt,40,true);
-   if (!arrangements || !evidence || !Number.isFinite(Date.parse(dateString)) || Date.parse(dateString) > Date.now()+60000) fail('Bevestigen vereist volledige afspraken, leveringskosten en bewijs/tijdstip van duurzame bevestiging.');
+   if(!evidence)fail('Vul het bewijs van de duurzame bevestiging in.');
+   const dateString = adminText(input.durableProvidedAt??'',40);
+   if (!Number.isFinite(Date.parse(dateString)) || Date.parse(dateString) > Date.now()+60000) fail('Vul bij Verstrekt op een geldige datum en tijd in die niet in de toekomst liggen.');
    durableAt = new Date(dateString).toISOString();
  }
  const total = confirming ? before.subtotal_cents + delivery! : before.total_cents;
@@ -223,7 +225,7 @@ export async function adminApi(request: Request, env: AdminEnv): Promise<Respons
    }
    if(path==='/api/admin/report'&&request.method==='GET') {
      const events=await financial(db,url); if(events.length>10000) fail('Verklein de rapportperiode.');
-     return json({...report(events),newOrders:await db.prepare("SELECT COUNT(*) AS n FROM orders WHERE workflow_status='new'").first('n'),activeProduction:await db.prepare("SELECT COUNT(*) AS n FROM orders WHERE workflow_status IN ('confirmed','in_production','ready')").first('n')});
+     return json({...report(events),cancelledOutstandingRefundCents:await db.prepare("SELECT COALESCE(SUM(p.amount_paid_cents-p.amount_refunded_cents),0) AS n FROM orders o JOIN payment_status p ON p.order_id=o.id WHERE o.workflow_status='cancelled'").first('n'),newOrders:await db.prepare("SELECT COUNT(*) AS n FROM orders WHERE workflow_status='new'").first('n'),activeProduction:await db.prepare("SELECT COUNT(*) AS n FROM orders WHERE workflow_status IN ('confirmed','in_production','ready')").first('n')});
    }
    if(path==='/api/admin/audit'&&request.method==='GET') return json((await db.prepare('SELECT * FROM audit_log ORDER BY created_at DESC,id DESC LIMIT 100').all()).results);
    if(path==='/api/admin/export'&&request.method==='GET') {
