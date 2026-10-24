@@ -111,6 +111,11 @@ are drafts; multiple authorized students need individual least-privilege access.
 
 ## Phase 3: simple protected administration
 
+Local implementation is now available; see [Phase 3 administration](phase-3-admin.md).
+It includes a separate dashboard, local signed sessions, prepared Access JWT/
+allowlist verification, workflow/payment edits, products/pauses, physical summaries,
+ledger reports, CSV and append-only audit. Real Access/D1/deployment remain disabled.
+
 - Cloudflare Access on the admin hostname; verify issuer, audience, expiry and JWT
   signature in every private API. Never authorize solely from a client header or
   hidden route. Fail closed if authentication configuration is missing.

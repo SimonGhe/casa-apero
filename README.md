@@ -6,6 +6,13 @@ website remains on `main`.
 
 ## Phase 2 local workflow
 
+Phase 3 now adds a separate local Dutch student dashboard at
+**http://127.0.0.1:5180/**: run `pnpm.cmd db:migrate`, then `pnpm.cmd dev:admin`.
+Choose **Lokale testbeheerder starten**. With the storefront dev server also
+running, `pnpm.cmd demo:admin` creates fictional review records. No deployment
+or production DB connection is configured. See [Phase 3 administration](docs/phase-3-admin.md)
+for Access verification, financial rules, tests and launch blockers.
+
 The domain **casa-apero.com** is registered through Cloudflare; production has not
 been deployed or connected. Use only fictitious data locally.
 
