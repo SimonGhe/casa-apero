@@ -64,27 +64,27 @@ export async function existing(db: D1Database, key: string, hash: string): Promi
   if (row.request_hash !== hash) throw new ApiError(409, 'idempotency_conflict', 'Deze verzendcode hoort bij andere gegevens. Start een nieuwe aanvraag.');
   return json(await receipt(db, row.order_id));
 }
-export async function createOrder(db: D1Database, input: RequestInput, key: string, hash: string, testerHash?:string) {
+export async function createOrder(db: D1Database, input: RequestInput, key: string, hash: string, testerHash?:string,publicLegalVersion?:string) {
   const id = crypto.randomUUID();
-  const reference = `TEST-${crypto.randomUUID().replaceAll('-', '').slice(0, 16).toUpperCase()}`;
+  const reference = `${publicLegalVersion?'CA':'TEST'}-${crypto.randomUUID().replaceAll('-', '').slice(0, 16).toUpperCase()}`;
   const selection = JSON.stringify(input.items);
   // Insert and all snapshots are one D1 transaction. The guarded INSERT rechecks
   // availability and authoritative pricing inside that same transaction.
   const statement = db.prepare(`INSERT INTO orders
-    (id,reference,receipt_token_hash,customer_name,email,phone,arrangement,requested_date,notes,subtotal_cents,legal_version,acknowledgement_at)
-    SELECT ?,?,?,?,?,?,?,?,?,SUM(p.price_cents * json_extract(j.value,'$.quantity')),?,?
+    (id,reference,receipt_token_hash,customer_name,email,phone,arrangement,requested_date,notes,subtotal_cents,legal_version,acknowledgement_at,source,delivery_cents)
+    SELECT ?,?,?,?,?,?,?,?,?,SUM(p.price_cents * json_extract(j.value,'$.quantity')),?,?,?,?
     FROM json_each(?) j JOIN products p ON p.id=json_extract(j.value,'$.productId') AND p.variant_id=json_extract(j.value,'$.variantId')
     WHERE p.published=1 AND p.orders_paused=0 AND (SELECT value FROM application_settings WHERE key='orders_paused')='false'
     HAVING COUNT(*)=? AND SUM(p.price_cents * json_extract(j.value,'$.quantity'))=?`)
     .bind(id, reference, await digest(input.receiptToken), input.name, input.email, input.phone || null,
-      input.arrangement, input.requestedDate || null, input.notes || null, LEGAL_VERSION, new Date().toISOString(), selection, input.items.length, input.expectedSubtotalCents);
+      input.arrangement, input.requestedDate || null, input.notes || null, publicLegalVersion??LEGAL_VERSION, new Date().toISOString(),publicLegalVersion?'web':'local_test',publicLegalVersion?0:null, selection, input.items.length, input.expectedSubtotalCents);
   try {
     await db.batch([
       statement,
       db.prepare(`INSERT INTO order_items(order_id,product_id,variant_id,product_name,quantity,unit_price_cents,line_total_cents,production_days,unit_cost_cents)
         SELECT ?,p.id,p.variant_id,p.name,json_extract(j.value,'$.quantity'),p.price_cents,p.price_cents*json_extract(j.value,'$.quantity'),p.production_days,p.cost_cents
         FROM json_each(?) j JOIN products p ON p.id=json_extract(j.value,'$.productId')`).bind(id, selection),
-      db.prepare("INSERT INTO order_status_history(order_id,category,to_status,actor_id) VALUES (?,'request','received',?)").bind(id,testerHash?`test-checkout:${testerHash}`:'local-test-customer'),
+      db.prepare("INSERT INTO order_status_history(order_id,category,to_status,actor_id) VALUES (?,'request','received',?)").bind(id,publicLegalVersion?'web-customer':testerHash?`test-checkout:${testerHash}`:'local-test-customer'),
       db.prepare('INSERT INTO payment_status(order_id) VALUES (?)').bind(id),
       db.prepare('INSERT INTO idempotency_keys(key,request_hash,order_id) VALUES (?,?,?)').bind(key, hash, id),
       ...(testerHash?[
@@ -92,6 +92,7 @@ export async function createOrder(db: D1Database, input: RequestInput, key: stri
         db.prepare("INSERT INTO audit_log(id,actor_id,action,entity_type,entity_id,before_json,after_json) VALUES (?,?,'test_request.create','order',?,'{}',?)")
           .bind(crypto.randomUUID(),`test-checkout:${testerHash}`,id,JSON.stringify({reference,fictional:true,source:'authenticated_test_checkout'})),
       ]:[]),
+      ...(publicLegalVersion?[db.prepare("INSERT INTO audit_log(id,actor_id,action,entity_type,entity_id,before_json,after_json) VALUES (?,'web-customer','request.create','order',?,'{}',?)").bind(crypto.randomUUID(),id,JSON.stringify({reference,legalVersion:publicLegalVersion,source:'web'}))]:[]),
     ]);
   } catch (error) {
     const duplicate = await existing(db, key, hash);

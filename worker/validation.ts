@@ -26,7 +26,7 @@ export function validateSelection(value: unknown): Selection[] {
     return { productId, variantId, quantity: item.quantity as number };
   }).sort((a, b) => a.productId.localeCompare(b.productId));
 }
-export function validateRequest(value: unknown, today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Brussels' })): RequestInput {
+export function validateRequest(value: unknown, today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Brussels' }),mode:'test'|'public'='test'): RequestInput {
   const input = record(value);
   const name = text(input.name, 100, true);
   const email = text(input.email, 254, true).toLowerCase();
@@ -36,10 +36,10 @@ export function validateRequest(value: unknown, today = new Date().toLocaleDateS
   if (phone && !/^[+\d() .\-]{6,40}$/.test(phone)) invalid('Controleer het telefoonnummer.');
   if (input.arrangement !== 'pickup' && input.arrangement !== 'delivery') invalid('Kies afhaling of levering.');
   if (requestedDate && (!/^\d{4}-\d{2}-\d{2}$/.test(requestedDate) || !Number.isFinite(Date.parse(requestedDate)) || new Date(requestedDate).toISOString().slice(0, 10) !== requestedDate || requestedDate < today)) invalid('Kies een geldige datum vanaf vandaag.');
-  if (input.acknowledged !== true || input.testDataOnly !== true) invalid('Bevestig dat dit een vrijblijvende testaanvraag met fictieve gegevens is.');
+  if (input.acknowledged !== true || input.testDataOnly !== (mode==='test')) invalid(mode==='test'?'Bevestig dat dit een vrijblijvende testaanvraag met fictieve gegevens is.':'Bevestig dat je de informatie over je vrijblijvende afhaalaanvraag hebt gelezen.');
   if (!Number.isSafeInteger(input.expectedSubtotalCents) || (input.expectedSubtotalCents as number) < 0) invalid('Vernieuw het prijsoverzicht.');
   if (typeof input.receiptToken !== 'string' || !/^[a-f0-9]{64}$/.test(input.receiptToken)) invalid('Ongeldige ontvangstcode.');
   return { name, email, phone, requestedDate, notes: text(input.notes ?? '', 1000), arrangement: input.arrangement,
-    items: validateSelection(input.items), acknowledged: true, testDataOnly: true,
+    items: validateSelection(input.items), acknowledged: true, testDataOnly: mode==='test',
     expectedSubtotalCents: input.expectedSubtotalCents as number, receiptToken: input.receiptToken };
 }

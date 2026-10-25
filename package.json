@@ -21,6 +21,8 @@
     "build": "pnpm catalogue:check && pnpm typecheck && vite build",
     "build:staging": "pnpm catalogue:check && pnpm typecheck && vite build --mode staging",
     "build:test-checkout": "pnpm catalogue:check && pnpm typecheck && vite build --mode test-checkout",
+    "build:shop": "pnpm catalogue:check && pnpm typecheck && vite build --mode shop",
+    "build:admin-production": "pnpm catalogue:check && pnpm typecheck && vite build --mode admin-production",
     "test:test-checkout": "playwright test --config playwright.test-checkout.config.ts",
     "verify:test-checkout": "node scripts/verify-test-checkout-artifact.mjs",
     "deploy:staging": "node scripts/deploy-staging.mjs",

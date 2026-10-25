@@ -11,6 +11,7 @@ import { readEventAttempt,persistEventAttempt,finishEventAttempt } from './event
 
 type Identity={email:string;local:boolean;preview?:boolean;writesEnabled?:boolean};
 const onlinePreview=import.meta.env.MODE==='admin-preview';
+const onlineAccess=onlinePreview||import.meta.env.MODE==='admin-production';
 const localSimulation=import.meta.env.DEV&&import.meta.env.MODE==='admin';
 type Tab='orders'|'products'|'events'|'report'|'audit';
 type Overview=Report&{newOrders:number;activeProduction:number};
@@ -28,18 +29,18 @@ export function Dashboard(){
  return <div className="admin-shell">
    <header className="admin-header"><BrandLogo className="header-logo" /><div><strong>Casa Apero</strong><p>Studentenbeheer</p></div>{identity&&<button className="button button-secondary" onClick={async()=>{if(!localSimulation){window.location.assign('/cdn-cgi/access/logout');return;}await adminApi('logout',{},'POST');setIdentity(null);setSelected(undefined);}}>Afmelden</button>}</header>
    <main className="content-width admin-main">
-    <h1 className={selected?'sr-only':undefined}>Studentenbeheer</h1><p className="notice">{onlinePreview?'TESTVERSIE — oefen alleen met fictieve bestellingen.':'Lokale test — gebruik alleen fictieve bestellingen.'} Er worden geen echte betalingen of e-mails verstuurd.</p>
+    <h1 className={selected?'sr-only':undefined}>Studentenbeheer</h1><p className="notice">{import.meta.env.MODE==='admin-production'?'Productiebeheer — verstuur bevestigingen persoonlijk via het goedgekeurde schoolkanaal. Registreer betalingen pas nadat je ze hebt ontvangen. Er worden geen automatische e-mails verstuurd.':<>{onlinePreview?'TESTVERSIE — oefen alleen met fictieve bestellingen.':'Lokale test — gebruik alleen fictieve bestellingen.'} Er worden geen echte betalingen of e-mails verstuurd.</>}</p>
     {error&&<p role="alert" className="notice">{error}</p>}
     {identity===undefined?<p role="status">Sessie controleren…</p>:!identity?<section><h2>Aanmelden</h2>{!localSimulation?<p>Een geldige Cloudflare Access-sessie en beheerdersmachtiging zijn vereist. <a className="text-link" href="/">Opnieuw aanmelden via Cloudflare Access</a></p>:<><p>Start op deze lokale omgeving een sessie als fictieve beheerder. Online beheer vereist later Cloudflare Access en een goedgekeurde beheerderslijst.</p><button className="button button-primary" onClick={async()=>{try{await adminApi('local-login',{},'POST');setError('');await loadIdentity();}catch(failure){setError(errorMessage(failure));}}}>Lokale testbeheerder starten</button></>}</section>:<>
      <p className="admin-identity">Aangemeld: {identity.email}</p>
-     {onlinePreview&&!identity.writesEnabled&&<p className="notice">Alleen bekijken. Wijzigingen blijven uitgeschakeld tot de echte Access-login en de aparte testdatabase zijn goedgekeurd.</p>}
+     {onlineAccess&&!identity.writesEnabled&&<p className="notice">Alleen bekijken. Wijzigingen blijven uitgeschakeld tot de echte Access-login en de aparte testdatabase zijn goedgekeurd.</p>}
      {!selected&&<section className="admin-kpis" aria-label="Overzicht">
        <Kpi title="Nieuwe aanvragen" value={overview?.newOrders??'…'} /><Kpi title="Actieve productie" value={overview?.activeProduction??'…'} /><Kpi title="Betaalde omzet dit jaar" value={overview?money(overview.revenueCents):'…'} />
      </section>}
      <nav className="admin-tabs" aria-label="Beheernavigatie">{([['orders','Bestellingen'],['products','Producten'],['events','Marktverkopen'],['report','Rapporten'],['audit','Wijzigingslog']] as const).map(([key,label])=><button key={key} aria-pressed={tab===key} onClick={()=>{setTab(key);setSelected(undefined);}}>{label}</button>)}</nav>
-     {tab==='orders'&&(selected?<OrderEditor id={selected} back={()=>setSelected(undefined)} changed={refresh} readOnly={onlinePreview&&!identity.writesEnabled}/>:<OrderList revision={revision} select={setSelected}/>)}
-     {tab==='products'&&<fieldset disabled={onlinePreview&&!identity.writesEnabled}><Products changed={refresh}/></fieldset>}
-     {tab==='events'&&<fieldset disabled={onlinePreview&&!identity.writesEnabled}><Events changed={refresh}/></fieldset>}
+     {tab==='orders'&&(selected?<OrderEditor id={selected} back={()=>setSelected(undefined)} changed={refresh} readOnly={onlineAccess&&!identity.writesEnabled}/>:<OrderList revision={revision} select={setSelected}/>)}
+     {tab==='products'&&<fieldset disabled={onlineAccess&&!identity.writesEnabled}><Products changed={refresh}/></fieldset>}
+     {tab==='events'&&<fieldset disabled={onlineAccess&&!identity.writesEnabled}><Events changed={refresh}/></fieldset>}
      {tab==='report'&&<Reports/>}
      {tab==='audit'&&<Audit/>}
     </>}

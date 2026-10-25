@@ -7,7 +7,7 @@ import {getCatalogue} from '../lib/catalogueApi';
 import {TEST_CHECKOUT_BASE,TEST_CHECKOUT_API} from '../../shared/testCheckout';
 
 const protectedTest=import.meta.env.MODE==='test-checkout'&&typeof window!=='undefined'&&window.location.pathname.startsWith(TEST_CHECKOUT_BASE);
-const live=protectedTest||(import.meta.env.DEV&&import.meta.env.MODE!=='staging'&&typeof window!=='undefined'&&['localhost','127.0.0.1','[::1]'].includes(window.location.hostname));
+const live=import.meta.env.MODE==='shop'||protectedTest||(import.meta.env.DEV&&import.meta.env.MODE!=='staging'&&typeof window!=='undefined'&&['localhost','127.0.0.1','[::1]'].includes(window.location.hostname));
 const frozen=validateCatalogue(snapshot);
 type State=Catalogue&{ready:boolean;error:string;loading:boolean};
 const CatalogueContext=createContext<State|null>(null);

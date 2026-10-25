@@ -12,7 +12,7 @@ declare global {
 export function Turnstile({ config, onToken, reset }: { config: LocalConfig; onToken: (token: string) => void; reset: number }) {
   const container = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (import.meta.env.MODE!=='test-checkout'&&config.turnstileMode === 'local-mock') { onToken('local-test-token'); return; }
+    if (import.meta.env.MODE!=='test-checkout'&&import.meta.env.MODE!=='shop'&&config.turnstileMode === 'local-mock') { onToken('local-test-token'); return; }
     if (!config.siteKey || !['siteverify', 'siteverify-test'].includes(config.turnstileMode ?? '')) return;
     let cancelled = false;
     let id: string | undefined;

@@ -191,3 +191,18 @@ storage is discarded. No consent banner is needed for the current scoped storage
 See [legal readiness](docs/legal-readiness.md) for official sources checked on
 24 October 2026, unresolved identity/tax/privacy questions, the storage inventory,
 durable-medium confirmation without automated email, and Phase 2 release gates.
+
+## Phase 6 authenticated fictional checkout (local preparation)
+
+See [Phase 6 verification and deployment plan](docs/phase-6-test-checkout.md) for
+the main-domain test flow, separate tester Access audience, isolated staging D1,
+local test commands and approval gates. Nothing in this preparation enables real
+orders or changes the existing online storefront/admin deployments.
+
+## MVP public webshop
+
+The existing checkout also supports a public, pickup-only production build and
+the existing admin workflow on a clean production binding. See the short
+[MVP launch note](docs/mvp-launch.md) for what works, the manual confirmation
+procedure and the facts/approval still needed for activation. Real ordering and
+production admin writes remain disabled by default. No remote switch is automatic.

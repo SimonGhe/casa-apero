@@ -4,6 +4,9 @@ dist-staging/
 dist-admin/
 dist-admin-preview/
 dist-test-checkout/
+dist-shop/
+dist-admin-production/
+shop-test-results/
 test-checkout-results/
 admin-test-results/
 admin-preview-test-results/

@@ -7,6 +7,7 @@ import { ProductPhoto } from '../components/ProductPhoto';
 import { QuantityInput } from '../components/QuantityInput';
 
 export function Cart() {
+  const publicShop=import.meta.env.MODE==='shop';
   const {shopSettings}=useCatalogue();
   const { lines, count, totalCents, update,hasUnavailableItems,removeUnavailable } = useCart();
   const paused = hasUnavailableItems||shopSettings.ordersPaused || lines.some((line) => line.product.ordersPaused);
@@ -23,10 +24,10 @@ export function Cart() {
         </article>)}
         <p className="cart-storage-note">Je selectie blijft vier uur na de laatste wijziging op dit apparaat bewaard. Je hebt nog geen bestelling geplaatst. <Link to="/cookies">Meer over browseropslag</Link>.</p>
       </div>
-      <aside className="order-summary" aria-label="Overzicht winkelmand"><h2>Jouw overzicht</h2><div className="summary-row"><span>{count} {count === 1 ? 'artikel' : 'artikelen'}</span><span>{money(totalCents)}</span></div><div className="summary-row"><span>Afhaling / levering</span><span>In overleg</span></div><div className="summary-row summary-total"><span>Totaal producten</span><strong data-testid="cart-total">{money(totalCents)}</strong></div><p className="summary-note">Dit is het totaal van je producten. Eventuele kosten voor lokale levering worden vooraf afgesproken en zijn hier niet inbegrepen.</p>
+      <aside className="order-summary" aria-label="Overzicht winkelmand"><h2>Jouw overzicht</h2><div className="summary-row"><span>{count} {count === 1 ? 'artikel' : 'artikelen'}</span><span>{money(totalCents)}</span></div><div className="summary-row"><span>{publicShop?'Afhaling':'Afhaling / levering'}</span><span>{publicShop?'Geen extra kosten':'In overleg'}</span></div><div className="summary-row summary-total"><span>{publicShop?'Totaal bij afhaling':'Totaal producten'}</span><strong data-testid="cart-total">{money(totalCents)}</strong></div><p className="summary-note">{publicShop?'Alleen afhaling op afspraak. Geen levering of online betaling.':'Dit is het totaal van je producten. Eventuele kosten voor lokale levering worden vooraf afgesproken en zijn hier niet inbegrepen.'}</p>
         {paused ? <p className="pause-notice">Er staat een gepauzeerd product in je selectie of de webshop neemt tijdelijk geen bestellingen aan.</p> : <Link className="button button-primary w-full" to="/bestellen">Naar bestellen <ArrowRight size={18} aria-hidden="true" /></Link>}
-        <div className="checkout-info"><Info size={17} aria-hidden="true" /><p>Testversie: via de openbare website kun je nog niet bestellen. Je betaalt later bij afhaling of levering.</p></div>
-        <p className="summary-note">Lees de <Link to="/algemene-voorwaarden">algemene voorwaarden</Link> en de <Link to="/herroepingsrecht">informatie over herroeping</Link>. De definitieve afspraken zijn nog in voorbereiding.</p>
+        <div className="checkout-info"><Info size={17} aria-hidden="true" /><p>{publicShop?'Je aanvraag wordt persoonlijk bevestigd. Je betaalt bij afhaling: contant of via een vooraf afgesproken elektronische methode.':'Testversie: via de openbare website kun je nog niet bestellen. Je betaalt later bij afhaling of levering.'}</p></div>
+        <p className="summary-note">Lees de <Link to="/algemene-voorwaarden">algemene voorwaarden</Link> en de <Link to="/herroepingsrecht">informatie over herroeping</Link>. {publicShop?'Na bevestiging ongeveer twee weken productie.':'De definitieve afspraken zijn nog in voorbereiding.'}</p>
       </aside>
     </div>}
   </div>;

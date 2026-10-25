@@ -45,9 +45,9 @@ export function Home() {
       <div className="steps-grid">
         <div><span className="step-number">01</span><h3>Kies jouw kommetjes</h3><p>Ontdek onze collectie en stel jouw selectie samen.</p></div>
         <div><span className="step-number">02</span><h3>We maken & spreken af</h3><p>Alles wordt op bestelling gemaakt, met een geschatte productietijd van ongeveer 2 weken. Ons team bevestigt de werkelijke afspraak persoonlijk.</p></div>
-        <div><span className="step-number">03</span><h3>Ophalen & genieten</h3><p>Je betaalt bij de afgesproken afhaling of levering, contant of via een goedgekeurde elektronische methode.</p></div>
+        <div><span className="step-number">03</span><h3>Ophalen & genieten</h3><p>{import.meta.env.MODE==='shop'?business.payment:'Je betaalt bij de afgesproken afhaling of levering, contant of via een goedgekeurde elektronische methode.'}</p></div>
       </div>
-      <div className="conditions-line"><Check size={18} aria-hidden="true" /><p>Afhaling in Brugge op afspraak. Lokale levering en eventuele kosten in overleg. Je voorkeursdatum is een aanvraag.</p><Link className="text-link" to="/bestellen">Alle afspraken <ArrowRight size={16} aria-hidden="true" /></Link></div>
+      <div className="conditions-line"><Check size={18} aria-hidden="true" /><p>{import.meta.env.MODE==='shop'?'Alleen afhaling op afspraak. Je aanvraag wordt persoonlijk bevestigd; daarna ongeveer twee weken productie.':'Afhaling in Brugge op afspraak. Lokale levering en eventuele kosten in overleg. Je voorkeursdatum is een aanvraag.'}</p><Link className="text-link" to="/bestellen">Alle afspraken <ArrowRight size={16} aria-hidden="true" /></Link></div>
     </section>
   </>;
 }
