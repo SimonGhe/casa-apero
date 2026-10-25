@@ -1,7 +1,11 @@
 # MVP webshop — implementation and final switch
 
-25 October 2026. Public checkout and production admin are prepared locally on
-develop. Nothing is deployed or activated. Both remote databases are untouched.
+25 October 2026 update: production D1 has now been initialized with the four
+approved products and zero transactions. Ordering remains paused. The live
+domains still use staging; no production Worker or domain switch was performed.
+See [the production setup record](production-setup.md) for current verification,
+private configuration, backups and coordinated cutover instructions.
+Public checkout and production admin are prepared locally on develop.
 The earlier Phase 6 Access-gated fictional checkout remains available in code;
 it is not a dependency of the public production checkout.
 

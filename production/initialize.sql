@@ -1,4 +1,5 @@
--- Run ONLY once on the verified empty production DB after explicit launch approval.
+-- Run ONLY on the verified empty production DB after explicit initialization approval.
+-- Initialization is separate from approval to activate customer ordering.
 -- Normal migrations seed the four approved products. Never import staging data.
 -- No order, history, payment, audit or event seed belongs here.
 INSERT INTO application_settings(key,value)
