@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { money } from '../data/catalogue';
 import { useCart } from '../context/CartContext';
 import { business } from '../data/business';
+import { TeamPhoto } from '../components/TeamPhoto';
 import { SocialLinks } from '../components/SocialLinks';
 import { CheckoutPreparation } from '../components/CheckoutPreparation';
 import { LocalRequestLink } from '../components/LocalRequestLink';
@@ -36,7 +37,7 @@ export function Story() {
   return <><div className="content-width page-space story-page">
     <p className="eyebrow">Ons verhaal</p><h1 className="page-title">Samen maken.<br />Samen genieten.</h1>
     <p className="page-intro">Acht studenten. Een passie voor keramiek en gezellig tafelen.</p>
-    <div className="story-text-grid about-text"><h2>Wie zijn we?</h2><div className="prose">{business.about.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}<p>Onze mini-onderneming loopt tijdens het schooljaar. We maken onze potjes en schalen op bestelling, met een geschatte productietijd van ongeveer 2 weken.</p><Link className="text-link" to="/collectie">Ontdek de collectie <ArrowRight size={17} aria-hidden="true" /></Link><SocialLinks /></div></div>
+    <div className="story-text-grid about-text"><div><h2>Wie zijn we?</h2><TeamPhoto /></div><div className="prose">{business.about.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}<p>Onze mini-onderneming loopt tijdens het schooljaar. We maken onze potjes en schalen op bestelling, met een geschatte productietijd van ongeveer 2 weken.</p><Link className="text-link" to="/collectie">Ontdek de collectie <ArrowRight size={17} aria-hidden="true" /></Link><SocialLinks /></div></div>
     <figure className="story-wide-photo"><img src="/assets/market-stand.png" alt="Het bestaande Casa Apero sfeerbeeld met keramiek, hout en een warme aperotafel." /><figcaption>Ons oorspronkelijke sfeerbeeld. Eigen foto's van Olive, Dune Mini, Dune Grand en Aperitivo volgen later.</figcaption></figure>
   </div><div className="values-strip"><div className="content-width"><span><Hand size={18} aria-hidden="true" />Handgemaakte keramiek</span><span><Clock3 size={18} aria-hidden="true" />Ongeveer 2 weken productietijd (schatting)</span><span><MessageCircle size={18} aria-hidden="true" />Persoonlijk afgesproken</span></div></div></>;
 }

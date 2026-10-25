@@ -123,6 +123,10 @@ main:focus { outline: none; }
 .story-band { background: var(--cream); }
 .story-logo-area { display: flex; align-items: center; justify-content: center; }
 .story-logo { width: 100%; max-width: 510px; }
+.team-story-visual { flex-direction: column; gap: 18px; }
+.team-photo { width: 100%; margin: 20px 0 0; padding: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 30px rgb(78 40 14 / 7%); }
+.team-story-visual .team-photo { margin-top: 0; }
+.team-photo img { display: block; width: 100%; height: auto; object-fit: contain; border-radius: 5px; }
 .story-layout { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 100px; padding-block: 70px; }
 .story-photo { position: relative; aspect-ratio: 1.1; overflow: hidden; }
 .story-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 26% 66%; }

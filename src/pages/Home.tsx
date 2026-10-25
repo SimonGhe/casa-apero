@@ -2,9 +2,9 @@ import { ArrowRight, Check, Hand, Leaf, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {useCatalogue} from '../context/CatalogueContext';
 import { ProductCard } from '../components/ProductCard';
-import { BrandLogo } from '../components/BrandLogo';
 import { SocialLinks } from '../components/SocialLinks';
 import { business } from '../data/business';
+import { TeamPhoto } from '../components/TeamPhoto';
 
 export function Home() {
   const {products}=useCatalogue();
@@ -35,7 +35,7 @@ export function Home() {
 
     <section className="story-band">
       <div className="content-width story-layout">
-        <div className="story-logo-area"><BrandLogo className="story-logo" /></div>
+        <div className="story-logo-area team-story-visual"><TeamPhoto /></div>
         <div className="story-copy"><p className="eyebrow">Wie zijn we?</p><h2>Van onze handen,<br />naar jouw tafel.</h2>{business.about.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}<Link className="text-link" to="/ons-verhaal">Maak kennis met Casa Apero <ArrowRight size={17} aria-hidden="true" /></Link><SocialLinks /></div>
       </div>
     </section>

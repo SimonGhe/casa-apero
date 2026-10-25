@@ -121,12 +121,14 @@ test('official products show confirmed prices without invented variants', async 
 
 test('official logo, about text and social links are present and correctly proportioned', async ({ page }) => {
   await page.goto('/');
-  for (const selector of ['.header-logo', '.story-logo', '.footer-logo']) {
+  for (const selector of ['.header-logo', '.footer-logo']) {
     await expect(page.locator(selector)).toHaveAttribute('src', '/assets/logo-casa-apero.jpg');
     const size = await page.locator(selector).boundingBox();
     expect(size).not.toBeNull();
     expect(Math.abs(size!.width - size!.height)).toBeLessThan(1);
   }
+  await expect(page.locator('.story-logo')).toHaveCount(0);
+  await expect(page.locator('.team-photo img')).toHaveAttribute('alt', 'Het team achter Casa Apero');
   await expect(page.locator('.story-copy')).toContainText('8 enthousiaste studenten');
   await expect(page.locator('.story-copy')).toContainText('We werken op een duurzame manier');
   await expect(page.locator('.preview-banner')).not.toContainText('Voorbeeldproducten');
