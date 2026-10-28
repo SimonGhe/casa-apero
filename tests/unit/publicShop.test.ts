@@ -13,20 +13,28 @@ beforeEach(async()=>{
  const db=await mf.getD1Database('DB');for(const file of (await readdir('migrations')).filter(n=>/^\d.*\.sql$/.test(n)).sort())await db.exec((await readFile('migrations/'+file,'utf8')).split('\n').filter(l=>!l.trim().startsWith('--')).join(' '));
  await db.exec((await readFile('production/initialize.sql','utf8')).split('\n').filter(l=>!l.trim().startsWith('--')).join(' '));
  await db.exec("UPDATE application_settings SET value='false' WHERE key='orders_paused';");
- env={DB:db as unknown as D1Database,APP_ENV:'public-shop',PUBLIC_ORDERS_ENABLED:'true',LAUNCH_APPROVED:'true',LEGAL_VERSION:'approved-local-fixture-v1',TURNSTILE_MODE:'siteverify',TURNSTILE_SITE_KEY:'0x-local-fixture',TURNSTILE_SECRET_KEY:'fixture-only-secret'};
+ env={DB:db as unknown as D1Database,APP_ENV:'public-shop',PUBLIC_ORDERS_ENABLED:'true',LEGAL_VERSION:'Concept 0.2 · 28 oktober 2026',TURNSTILE_MODE:'siteverify',TURNSTILE_SITE_KEY:'0x-local-fixture',TURNSTILE_SECRET_KEY:'fixture-only-secret'};
 });
 afterEach(async()=>{vi.unstubAllGlobals();await mf.dispose();});
 const payload=(extra={})=>({name:'Fictieve klant',email:'fictional@example.test',phone:'',notes:'Alleen lokale test',requestedDate:'',arrangement:'pickup',items:[{productId:'olive',variantId:'olive-standard',quantity:2}],acknowledged:true,testDataOnly:false,expectedSubtotalCents:1398,receiptToken:crypto.randomUUID().replaceAll('-','').repeat(2),turnstileToken:'local-transport-fixture',...extra});
 function request(path:string,input?:unknown,headers={},settings:Partial<ShopEnv>={}){return shop.fetch(new Request('https://casa-apero.com/api/'+path,{method:input===undefined?'GET':'POST',headers:{Origin:'https://casa-apero.com','Content-Type':'application/json','CF-Connecting-IP':'192.0.2.5','Idempotency-Key':'10000000-0000-4000-8000-000000000001',...headers},...(input===undefined?{}:{body:JSON.stringify(input)})}),{...env,...settings});}
-it('starts with four approved prices and zero transactions, requires explicit launch and correct production dataset',async()=>{
+it('starts with four approved prices and zero transactions, requires technical activation and correct production dataset',async()=>{
  expect((await env.DB!.prepare('SELECT price_cents FROM products ORDER BY price_cents').all()).results.map(r=>r.price_cents)).toEqual([699,699,1299,2599]);
  for(const table of ['orders','order_items','payment_status','audit_log','financial_events','event_sales','test_checkout_orders'])expect(await env.DB!.prepare(`SELECT COUNT(*) AS n FROM ${table}`).first('n')).toBe(0);
- for(const settings of [{LAUNCH_APPROVED:'false'},{PUBLIC_ORDERS_ENABLED:'false'},{LEGAL_VERSION:''},{LEGAL_VERSION:'concept-1'},{TURNSTILE_MODE:'local-mock'},{TURNSTILE_SECRET_KEY:''},{TURNSTILE_SITE_KEY:'1x00000000000000000000AA'}])expect((await request('requests',payload(),{},settings)).status).toBe(403);
+ for(const settings of [{PUBLIC_ORDERS_ENABLED:'false'},{TURNSTILE_MODE:'local-mock'},{TURNSTILE_SECRET_KEY:''},{TURNSTILE_SITE_KEY:'1x00000000000000000000AA'}])expect((await request('requests',payload(),{},settings)).status).toBe(403);
  await env.DB!.exec("UPDATE application_settings SET value='staging' WHERE key='dataset';");expect((await request('requests',payload())).status).toBe(403);
  expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM orders').first('n')).toBe(0);
  await env.DB!.exec("UPDATE application_settings SET value='production' WHERE key='dataset'; DELETE FROM rate_limits;");
  for(let attempt=0;attempt<20;attempt++)expect((await request('receipt',{})).status).toBe(404);
  expect((await request('receipt',{})).status).toBe(429);
+});
+it('accepts a non-binding request with draft information and records its actual version without inventing approval',async()=>{
+ const response=await request('requests',payload(),{},{LEGAL_VERSION:''});
+ expect(response.status).toBe(201);
+ const row=await env.DB!.prepare('SELECT source,reference,legal_version,contract_status FROM orders').first();
+ expect(row).toMatchObject({source:'web',legal_version:'Concept 0.2 · 28 oktober 2026',contract_status:'none'});
+ expect(row!.reference).toMatch(/^CA-/);
+ expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM financial_events').first('n')).toBe(0);
 });
 it('enforces pickup, validation, same origin, authoritative prices, pauses and real Siteverify without customer accounts',async()=>{
  for(const extra of [{arrangement:'delivery'},{email:'not-an-email'},{email:'fixture@example.invalid'},{testDataOnly:true},{acknowledged:false},{name:''},{items:[{productId:'unknown',variantId:'unknown',quantity:1}]}])expect((await request('requests',payload(extra))).status).toBe(400);

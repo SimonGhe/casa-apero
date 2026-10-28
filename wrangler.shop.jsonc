@@ -5,6 +5,6 @@
  "routes":[{"pattern":"casa-apero.com","custom_domain":true}],
  "assets":{"binding":"ASSETS","not_found_handling":"single-page-application","run_worker_first":true},
  "observability":{"enabled":false},
- "vars":{"APP_ENV":"public-shop","PUBLIC_ORDERS_ENABLED":"false","LAUNCH_APPROVED":"false","LEGAL_VERSION":"","TURNSTILE_MODE":"siteverify","TURNSTILE_SITE_KEY":""},
+ "vars":{"APP_ENV":"public-shop","PUBLIC_ORDERS_ENABLED":"false","LEGAL_VERSION":"","TURNSTILE_MODE":"siteverify","TURNSTILE_SITE_KEY":""},
  "d1_databases":[{"binding":"DB","database_name":"casa-apero-prod","database_id":"5d4d738b-4d84-4826-a15d-4652e7e191bd","remote":false,"migrations_dir":"migrations"}]
 }

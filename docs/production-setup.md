@@ -1,5 +1,9 @@
 # Production preparation — 25 October 2026
 
+This records the preparation before deployment. The subsequent approved
+[production cutover](production-cutover.md) is complete; consult that record
+for current domain assignments, verification and exact rollback instructions.
+
 Production D1 is initialized. No Worker, domain, Access policy or remote secret
 was changed. The live storefront and administration still use staging, including
 the existing restricted fictional checkout. No Git commit or push was made.

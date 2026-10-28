@@ -5,7 +5,8 @@ import type {TurnstileEnv} from './turnstile';
 import {readCatalogue} from './catalogue';
 import {sameOrigin} from './admin/access';
 import {requireProductionDatabase} from './production-guard';
-export interface ShopEnv extends TurnstileEnv {DB?:D1Database;ASSETS?:Fetcher;PUBLIC_ORDERS_ENABLED?:string;LAUNCH_APPROVED?:string;LEGAL_VERSION?:string}
+import {legalVersion} from '../src/data/legal';
+export interface ShopEnv extends TurnstileEnv {DB?:D1Database;ASSETS?:Fetcher;PUBLIC_ORDERS_ENABLED?:string;LEGAL_VERSION?:string}
 const headers={'Cache-Control':'no-store, private','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Cross-Origin-Resource-Policy':'same-origin'};
 const json=(value:unknown,status=200)=>Response.json(value,{status,headers});
 async function limit(db:D1Database,request:Request){
@@ -26,7 +27,7 @@ export default{async fetch(request:Request,env:ShopEnv):Promise<Response>{
    if(!env.DB)throw new ApiError(503,'unavailable','Webshop tijdelijk niet beschikbaar.');
    await requireProductionDatabase(env.DB);
    if(url.pathname==='/api/catalogue'&&request.method==='GET')return json(await readCatalogue(env.DB));
-   const enabled=env.PUBLIC_ORDERS_ENABLED==='true'&&env.LAUNCH_APPROVED==='true'&&Boolean(env.LEGAL_VERSION&&!/concept|draft|test/i.test(env.LEGAL_VERSION))&&env.TURNSTILE_MODE==='siteverify'&&Boolean(env.TURNSTILE_SITE_KEY&&env.TURNSTILE_SECRET_KEY)&&!/^(?:1x|2x|3x)/.test(env.TURNSTILE_SITE_KEY??'')&&!/^(?:1x|2x|3x)/.test(env.TURNSTILE_SECRET_KEY??'');
+   const enabled=env.PUBLIC_ORDERS_ENABLED==='true'&&env.TURNSTILE_MODE==='siteverify'&&Boolean(env.TURNSTILE_SITE_KEY&&env.TURNSTILE_SECRET_KEY)&&!/^(?:1x|2x|3x)/.test(env.TURNSTILE_SITE_KEY??'')&&!/^(?:1x|2x|3x)/.test(env.TURNSTILE_SECRET_KEY??'');
    if(url.pathname==='/api/config'&&request.method==='GET')return json({localRequests:enabled,publicRequests:enabled,...(enabled?{turnstileMode:'siteverify',siteKey:env.TURNSTILE_SITE_KEY}:{})});
    if(!enabled)throw new ApiError(403,'checkout_disabled','Aanvragen zijn nog niet vrijgegeven.');
    if(request.method==='POST'){sameOrigin(request);await limit(env.DB,request);}
@@ -41,7 +42,7 @@ export default{async fetch(request:Request,env:ShopEnv):Promise<Response>{
     const duplicate=await existing(env.DB,scopedKey,hash);if(duplicate)return duplicate;
     const pricing=await quote(env.DB,input.items);if(pricing.subtotalCents!==input.expectedSubtotalCents)throw new ApiError(409,'price_changed','De prijs is gewijzigd. Controleer het nieuwe overzicht.');
     await verifyTurnstile(typeof raw.turnstileToken==='string'?raw.turnstileToken:'',env,url.hostname);
-    return await createOrder(env.DB,input,scopedKey,hash,undefined,env.LEGAL_VERSION);
+    return await createOrder(env.DB,input,scopedKey,hash,undefined,env.LEGAL_VERSION?.trim()||legalVersion);
    }
    if(url.pathname==='/api/receipt'&&request.method==='POST'){
     const token=request.headers.get('Authorization')?.replace(/^Bearer /,'')??'';
