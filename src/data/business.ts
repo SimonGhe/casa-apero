@@ -4,9 +4,9 @@ export const business = {
     'We werken op een duurzame manier en omdat elk product met de hand gemaakt wordt, is elk stuk uniek. Met Casa Apero willen we van elk aperomoment iets bijzonders maken!',
   ],
   pickupArea: 'Julius en Maurits Sabbestraat, Brugge',
-  productionTime: 'Ongeveer 2 weken. Dit is een schatting, geen gegarandeerde deadline.',
-  delivery: import.meta.env.MODE==='shop'?'We bieden alleen afhaling op afspraak aan.':'Lokale levering rond Brugge is mogelijk in overleg. De mogelijkheden en eventuele kosten worden vooraf samen afgesproken.',
-  payment: import.meta.env.MODE==='shop'?'Je betaalt bij afhaling: contant of via een vooraf afgesproken elektronische betaalmethode.':'Je betaalt bij afhaling of levering: contant of via een goedgekeurde elektronische betaalmethode.',
+  productionTime: 'Ongeveer 2 weken na persoonlijke bevestiging. Dit is een schatting, geen gegarandeerde deadline.',
+  delivery: 'Alleen afhaling op afspraak. We bieden momenteel geen levering aan.',
+  payment: 'Je betaalt bij afhaling: contant of via een vooraf afgesproken elektronische betaalmethode. Er is geen online betaling.',
   // Vite only exposes this value after explicit publication approval at build time.
   publicContactEmail: __CASA_PUBLIC_CONTACT_EMAIL__,
   instagram: 'https://www.instagram.com/casa.apero.officieel/',

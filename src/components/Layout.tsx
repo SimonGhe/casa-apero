@@ -8,9 +8,10 @@ import { business } from '../data/business';
 import { BrandLogo } from './BrandLogo';
 import { SocialLinks } from './SocialLinks';
 import { LegalNavigation } from '../pages/Legal';
+import {orderingMessages} from '../lib/orderingStatus';
 
 export function Layout() {
-  const {shopSettings,error:catalogueError}=useCatalogue();
+  const {orderingState,error:catalogueError}=useCatalogue();
   const { count, storageWarning } = useCart();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -36,7 +37,7 @@ export function Layout() {
 
   return <>
     <a className="skip-link" href="#main-content">Naar de inhoud</a>
-    <div className="preview-banner">{import.meta.env.MODE==='shop'?'Bestelaanvragen · Afhalen op afspraak · Persoonlijke bevestiging':import.meta.env.MODE === 'test-checkout' ? 'TESTVERSIE — GEEN ECHTE BESTELLING · Alleen fictieve testerregistraties' : import.meta.env.MODE === 'staging' ? 'TESTVERSIE — Bestellingen nog niet mogelijk' : <>Lokale voorvertoning <span aria-hidden="true">·</span> Bestellen is nog niet mogelijk</>}</div>
+    <div className="preview-banner" aria-live="polite">{orderingState==='test'&&import.meta.env.MODE==='test-checkout'?'TESTVERSIE — GEEN ECHTE BESTELLING · Alleen fictieve testerregistraties':orderingMessages[orderingState]}</div>
     <header className="site-header">
       <div className="header-inner">
         <Link className="brand" to="/" aria-label="Casa Apero, naar de homepage"><BrandLogo className="header-logo" eager /><span className="brand-wordmark">Casa Apero<small>Handgemaakt. Samen genoten.</small></span></Link>
@@ -53,14 +54,13 @@ export function Layout() {
       {menuOpen && <nav id="mobile-nav" className="mobile-nav" aria-label="Mobiele navigatie"><NavLink to="/collectie">De collectie</NavLink><NavLink to="/ons-verhaal">Ons verhaal</NavLink><NavLink to="/bestellen">Zo bestel je</NavLink><NavLink to="/contact">Contact</NavLink></nav>}
     </header>
     {catalogueError&&<div className="pause-banner" role="alert">{catalogueError}</div>}
-    {!catalogueError&&shopSettings.ordersPaused && <div className="pause-banner" role="status">{shopSettings.pauseMessage}</div>}
     {storageWarning && <div className="storage-banner" role="status">Je browser kan de winkelmand niet bewaren. Houd dit tabblad open om je selectie te behouden.</div>}
     <main id="main-content" tabIndex={-1}><Outlet /></main>
     <footer className="site-footer">
       <div className="footer-main content-width">
         <div className="footer-brand"><Link className="footer-brand-link" to="/" aria-label="Casa Apero, naar de homepage"><BrandLogo className="footer-logo" /><span>Casa Apero</span></Link><p>Alles voor jouw aperomoment.</p><span>Een Vlajo mini-onderneming van 8 studenten.</span><SocialLinks /></div>
         <div><h2>Ontdek</h2><Link to="/collectie">De collectie</Link><Link to="/ons-verhaal">Ons verhaal</Link><Link to="/bestellen">Bestellen & afspreken <ArrowUpRight size={14} aria-hidden="true" /></Link></div>
-        <div><h2>Goed om te weten</h2><Link to="/contact">Contact</Link><Link to="/privacy">Privacy</Link>{business.publicContactEmail && <a href={`mailto:${business.publicContactEmail}`}>{business.publicContactEmail}</a>}<p>Handgemaakt op bestelling.<br />Ongeveer 2 weken productietijd (schatting).<br />{import.meta.env.MODE==='shop'?'Betalen bij afhaling.':'Betalen bij afhaling of levering.'}</p></div>
+        <div><h2>Goed om te weten</h2><Link to="/contact">Contact</Link><Link to="/privacy">Privacy</Link>{business.publicContactEmail && <a href={`mailto:${business.publicContactEmail}`}>{business.publicContactEmail}</a>}<p>Alleen afhaling op afspraak.<br />Ongeveer 2 weken productie na bevestiging (schatting).<br />Betalen bij afhaling.</p></div>
       </div>
       <div className="content-width"><LegalNavigation /></div>
       <div className="footer-bottom content-width"><span>Casa Apero</span><span>{import.meta.env.MODE==='shop'?'Handgemaakte keramiek':import.meta.env.MODE === 'staging' ? 'Testversie' : 'Lokale voorvertoning'} · productfoto's volgen</span><span>Met zorg gemaakt.</span></div>

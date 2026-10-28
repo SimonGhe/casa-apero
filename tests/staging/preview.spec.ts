@@ -5,7 +5,7 @@ test('staging serves branded products, navigation, cart and legal pages without 
   page.on('pageerror', (error) => errors.push(error.message));
   const response = await page.goto('/');
   expect(response?.headers()['x-robots-tag']).toContain('noindex');
-  await expect(page.locator('.preview-banner')).toHaveText('TESTVERSIE — Bestellingen nog niet mogelijk');
+  await expect(page.locator('.preview-banner')).toHaveText('TESTVERSIE — Geen echte bestelaanvragen. Gebruik alleen fictieve gegevens.');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   await expect(page.locator('.header-logo')).toHaveAttribute('src', '/assets/logo-casa-apero.jpg');
   for (const [slug, name, price] of [['olive', 'Olive', '6,99'], ['dune-mini', 'Dune Mini', '6,99'], ['dune-grand', 'Dune Grand', '12,99'], ['aperitivo', 'Aperitivo', '25,99']]) {

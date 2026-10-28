@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { cloudflare } from '@cloudflare/vite-plugin';
-import { approvedPublicEmail } from './src/lib/publicContact.ts';
+import { approvedPublicEmail, VERIFIED_PUBLIC_EMAIL } from './src/lib/publicContact.ts';
 import { fileURLToPath } from 'node:url';
 import { adminPreviewAccessConfig } from './src/lib/adminPreviewConfig.ts';
 import {testCheckoutConfig} from './src/lib/testCheckoutConfig.ts';
@@ -32,7 +32,7 @@ export default defineConfig(({ mode, command }) => {
     environments: { worker: { build: { sourcemap: !staging&&!admin&&!testCheckout&&!shop } } },
     define: {
       __CASA_PUBLIC_CONTACT_EMAIL__: JSON.stringify(approvedPublicEmail(
-        env.CASA_PUBLIC_CONTACT_EMAIL, env.CASA_PUBLIC_CONTACT_EMAIL_APPROVED,
+        env.CASA_PUBLIC_CONTACT_EMAIL??VERIFIED_PUBLIC_EMAIL, env.CASA_PUBLIC_CONTACT_EMAIL===undefined?'true':env.CASA_PUBLIC_CONTACT_EMAIL_APPROVED,
       )),
     },
     server: { host: '127.0.0.1', port: adminPreview ? 5185 : admin ? 5180 : 5173, strictPort: true },

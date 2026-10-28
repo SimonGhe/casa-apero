@@ -24,7 +24,7 @@ export async function createTestCheckoutFixture({publicShop=false}={}){
  const assets=directory=>({directory:resolve(directory),binding:'ASSETS',run_worker_first:true,routerConfig:{has_user_worker:true,invoke_user_worker_ahead_of_assets:true},assetConfig:{not_found_handling:'single-page-application'}});
  const mf=new Miniflare(convertV4MiniflareOptions({workers:[{
   name:'checkout-browser',routes:['casa-apero.com/*'],modules:true,scriptPath:resolve(storefront+'/worker/index.js'),compatibilityDate:'2026-10-24',
-  bindings:{...config.vars,...(publicShop?{PUBLIC_ORDERS_ENABLED:'true',LEGAL_VERSION:'Concept 0.2 · 28 oktober 2026'}:{TEST_CHECKOUT_ENABLED:'true',TEST_CHECKOUT_ISSUER:issuer,TEST_CHECKOUT_AUDIENCE:aud,ADMIN_ACCESS_AUDIENCE:adminAud,TEST_CHECKOUT_ALLOWED_EMAILS:'tester@example.invalid'}),TURNSTILE_SITE_KEY:'0x-fixture-sitekey',TURNSTILE_SECRET_KEY:'fixture-server-only-secret'},
+  bindings:{...config.vars,...(publicShop?{PUBLIC_ORDERS_ENABLED:'true'}:{TEST_CHECKOUT_ENABLED:'true',TEST_CHECKOUT_ISSUER:issuer,TEST_CHECKOUT_AUDIENCE:aud,ADMIN_ACCESS_AUDIENCE:adminAud,TEST_CHECKOUT_ALLOWED_EMAILS:'tester@example.invalid'}),TURNSTILE_SITE_KEY:'0x-fixture-sitekey',TURNSTILE_SECRET_KEY:'fixture-server-only-secret'},
   d1Databases:{DB:'shared-fictional-db'},assets:assets(storefront+'/client'),outboundService,
  },{
   name:'checkout-browser-admin',routes:['admin.casa-apero.com/*'],modules:true,scriptPath:resolve(adminAssets+'/worker/index.js'),compatibilityDate:'2026-10-24',

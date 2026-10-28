@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { approvedPublicEmail } from '../../src/lib/publicContact';
+import { approvedPublicEmail, VERIFIED_PUBLIC_EMAIL } from '../../src/lib/publicContact';
 
 describe('public email publication gate', () => {
+  it('publishes the owner-verified mailbox without weakening unapproved overrides',()=>{
+    expect(approvedPublicEmail(VERIFIED_PUBLIC_EMAIL,'true')).toBe('info@casa-apero.com');
+    expect(approvedPublicEmail('unapproved@example.test',undefined)).toBeNull();
+  });
   it('excludes an unapproved address from public configuration', () => {
     expect(approvedPublicEmail('student@example.test', undefined)).toBeNull();
     expect(approvedPublicEmail('student@example.test', 'false')).toBeNull();

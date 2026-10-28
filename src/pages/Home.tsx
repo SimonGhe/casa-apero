@@ -22,7 +22,7 @@ export function Home() {
       <span className="hero-caption">Oorspronkelijk sfeerbeeld · geen productfoto</span>
       <div className="hero-bottom"><span>Belgische Vlajo mini-onderneming</span><span>Gemaakt op bestelling</span></div>
     </section>
-    <div className="values-strip"><div className="content-width"><span><Hand size={18} aria-hidden="true" />Met de hand gemaakt</span><span><Leaf size={18} aria-hidden="true" />Een eigen karakter</span><span><MessageCircle size={18} aria-hidden="true" />Afhalen of leveren in overleg</span></div></div>
+    <div className="values-strip"><div className="content-width"><span><Hand size={18} aria-hidden="true" />Met de hand gemaakt</span><span><Leaf size={18} aria-hidden="true" />Een eigen karakter</span><span><MessageCircle size={18} aria-hidden="true" />Alleen afhalen op afspraak</span></div></div>
 
     <section className="section content-width">
       <div className="section-heading flex flex-wrap items-end justify-between gap-5">
@@ -44,10 +44,10 @@ export function Home() {
       <div className="section-heading"><p className="eyebrow">Van keuze tot aperomoment</p><h2>Met aandacht, op bestelling.</h2></div>
       <div className="steps-grid">
         <div><span className="step-number">01</span><h3>Kies jouw kommetjes</h3><p>Ontdek onze collectie en stel jouw selectie samen.</p></div>
-        <div><span className="step-number">02</span><h3>We maken & spreken af</h3><p>Alles wordt op bestelling gemaakt, met een geschatte productietijd van ongeveer 2 weken. Ons team bevestigt de werkelijke afspraak persoonlijk.</p></div>
-        <div><span className="step-number">03</span><h3>Ophalen & genieten</h3><p>{import.meta.env.MODE==='shop'?business.payment:'Je betaalt bij de afgesproken afhaling of levering, contant of via een goedgekeurde elektronische methode.'}</p></div>
+        <div><span className="step-number">02</span><h3>Eerst aanvragen & afspreken</h3><p>Verstuur je bestelaanvraag. Ons team bekijkt je selectie en spreekt de afhaling met je af. Pas na persoonlijke bevestiging start de productie van ongeveer 2 weken.</p></div>
+        <div><span className="step-number">03</span><h3>Ophalen & genieten</h3><p>{business.payment}</p></div>
       </div>
-      <div className="conditions-line"><Check size={18} aria-hidden="true" /><p>{import.meta.env.MODE==='shop'?'Alleen afhaling op afspraak. Je aanvraag wordt persoonlijk bevestigd; daarna ongeveer twee weken productie.':'Afhaling in Brugge op afspraak. Lokale levering en eventuele kosten in overleg. Je voorkeursdatum is een aanvraag.'}</p><Link className="text-link" to="/bestellen">Alle afspraken <ArrowRight size={16} aria-hidden="true" /></Link></div>
+      <div className="conditions-line"><Check size={18} aria-hidden="true" /><p>Alleen afhaling op afspraak. Je bestelaanvraag wordt persoonlijk bevestigd; daarna ongeveer twee weken productie.</p><Link className="text-link" to="/bestellen">Alle afspraken <ArrowRight size={16} aria-hidden="true" /></Link></div>
     </section>
   </>;
 }

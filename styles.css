@@ -462,7 +462,7 @@ main:focus { outline: none; }
 .button:not(:disabled):active { filter: brightness(.94); }
 .button:disabled { opacity: 1; background: #e6dfd5; color: #62594e; border-color: #a99b89; }
 .desktop-nav a, .mobile-nav a { min-height: 44px; display: inline-flex; align-items: center; }
-.footer-main > div:not(:first-child) > a { min-height: 44px; display: flex; align-items: center; }
+.footer-main > div:not(:first-child) > a { min-height: 44px; max-width: 100%; display: flex; align-items: center; overflow-wrap: anywhere; }
 .desktop-nav a.active, .mobile-nav a.active { font-weight: 650; text-decoration: underline; text-underline-offset: 6px; }
 .segmented-control button { min-height: 44px; }
 .segmented-control button:not([aria-pressed="true"]):hover { background: var(--cream); color: var(--wine); }

@@ -50,8 +50,8 @@ test('direct QR route, contact and privacy do not invent business data or collec
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.locator('input[type="email"], form')).toHaveCount(0);
   await page.goto('/contact');
-  await expect(page.getByText('Ons openbare e-mailadres wordt nog bevestigd.')).toBeVisible();
-  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+  await expect(page.locator('main a[href="mailto:info@casa-apero.com"]')).toBeVisible();
+  await expect(page.locator('main')).not.toContainText('e-mailadres wordt nog bevestigd');
   await page.goto('/privacy');
   await expect(page.getByRole('heading', { name: 'In deze voorvertoning' })).toBeVisible();
 });
@@ -146,5 +146,6 @@ test('official logo, about text and social links are present and correctly propo
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   }
   await expect(page.locator('main')).toContainText('Julius en Maurits Sabbestraat, Brugge');
-  await expect(page.locator('main')).toContainText('eventuele kosten');
+  await expect(page.locator('main')).toContainText('Alleen afhaling op afspraak');
+  await expect(page.locator('main')).not.toContainText('Lokale levering');
 });

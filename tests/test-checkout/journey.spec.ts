@@ -19,7 +19,7 @@ test.afterEach(async({page})=>{await page.close();await runtime?.dispose();expec
 async function select(page:import('@playwright/test').Page){
  await page.goto('/product/olive');await page.getByRole('button',{name:'In winkelmand',exact:true}).click();await page.goto('/bestellen');await page.getByRole('link',{name:'Aanmelden als tester',exact:true}).click();
  await expect(page.getByRole('region',{name:'Serverberekend overzicht'})).toContainText('6,99');
- await page.getByLabel('Afhaling of levering').selectOption('pickup');await page.getByRole('checkbox',{name:/informatie gelezen/}).check();await page.getByRole('checkbox',{name:/uitsluitend fictieve/}).check();
+ await page.getByLabel('Afhaling').selectOption('pickup');await page.getByRole('checkbox',{name:/informatie gelezen/}).check();await page.getByRole('checkbox',{name:/uitsluitend fictieve/}).check();
 }
 test('fictional main-domain checkout, persistent receipt and existing admin management',async({page},testInfo)=>{
  await select(page);await expect(page.getByLabel('Naam',{exact:true})).toHaveValue('Fictieve Testklant');await expect(page.getByLabel('Naam',{exact:true})).toHaveAttribute('readonly','');await expect(page.locator('.preview-banner')).toContainText('GEEN ECHTE BESTELLING');

@@ -18,9 +18,9 @@ test('order search, confirmation, production, payment, notes and audit work on d
  await page.getByLabel('Zoek op naam of referentie').fill(reference);await page.getByRole('button',{name:`Open ${reference}`}).click();
  await expect(page.getByRole('heading',{name:reference,exact:true})).toBeVisible();
  await page.getByRole('textbox',{name:'Notitie voor het team',exact:true}).fill('Fictieve productienotitie');
- await page.getByLabel('Afhalen of leveren',{exact:true}).fill('TEST — afhalen in Brugge na afspraak.');
+ await page.getByLabel('Afhaalafspraken',{exact:true}).fill('TEST — afhalen in Brugge na afspraak.');
  await page.getByRole('button',{name:'Bestelling bevestigen',exact:true}).click();
- await page.getByLabel('Extra afhaal- of leveringskosten EUR',{exact:true}).fill('0');
+ await page.getByLabel('Afhaalkosten EUR',{exact:true}).fill('0');
  await page.getByLabel('Hoe heb je de afspraken gedeeld?').fill('Fictief testbewijs, niets naar een klant verstuurd.');
  await page.getByLabel('Wanneer heb je ze gedeeld?').fill('2026-01-01T12:00');
  await page.getByRole('button',{name:'Bevestiging bewaren'}).click();

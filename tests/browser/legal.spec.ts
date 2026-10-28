@@ -19,12 +19,12 @@ test('all legal routes load directly, support footer navigation and fit narrow s
   await expect(page.locator('main')).toBeFocused();
 });
 
-test('unconfirmed identity, contact, tax and retention remain explicit placeholders', async ({ page }) => {
+test('verified contact is published while identity, tax and retention remain explicit placeholders', async ({ page }) => {
   await page.goto('/wettelijke-vermeldingen');
-  for (const text of ['TODO — school/Vlajo:', 'Juridische naam', 'vestigingsadres', 'ondernemingsnummer', 'btw-identificatie', 'openbaar e-mailadres']) {
+  for (const text of ['TODO — school/Vlajo:', 'Juridische naam', 'vestigingsadres', 'ondernemingsnummer', 'btw-identificatie']) {
     await expect(page.locator('main')).toContainText(text);
   }
-  await expect(page.locator('main a[href^="mailto:"]')).toHaveCount(0);
+  await expect(page.locator('main a[href="mailto:info@casa-apero.com"]')).toBeVisible();
   await page.goto('/privacy');
   for (const text of ['verwerkingsverantwoordelijke', 'rechtsgrond', 'Cloudflare', 'bewaartermijnen', 'Jouw rechten', 'één maand']) await expect(page.locator('main')).toContainText(text);
   await page.goto('/herroepingsrecht');
@@ -40,7 +40,7 @@ test('checkout displays selection and essential information without accepting da
   await page.goto('/bestellen');
   const info = page.getByRole('region', { name: 'Bestelinformatie' });
   await expect(info).toHaveAttribute('data-checkout-status', 'inactive');
-  for (const text of ['Olive · 2 ×', '6,99', '13,98', 'leveringskosten', '2 weken', 'Brugge', 'contant', '14 dagen', 'geen betalingsverplichting']) await expect(info).toContainText(text);
+  for (const text of ['Olive · 2 ×', '6,99', '13,98', 'afhaalkosten', '2 weken', 'Brugge', 'contant', '14 dagen', 'geen betalingsverplichting']) await expect(info).toContainText(text);
   await expect(info.getByRole('checkbox')).toBeDisabled();
   await expect(info.getByRole('checkbox')).not.toBeChecked();
   await expect(info.getByRole('button')).toBeDisabled();

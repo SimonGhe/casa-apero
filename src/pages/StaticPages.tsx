@@ -18,17 +18,17 @@ export function Ordering() {
         <h2>Zo werkt bestellen</h2>
         <ol className="ordering-steps">
           <li><strong>Kies jouw potjes en schalen</strong><p>Kies uit de actuele collectie en pas de aantallen aan in je winkelmand.</p></li>
-          <li><strong>Geef je voorkeur door</strong><p>Bij de opening kun je zonder account bestellen. Je geeft je naam en e-mailadres door, eventueel je telefoonnummer en je voorkeur voor afhaling of levering.</p></li>
-          <li><strong>We spreken eerst alles af</strong><p>Ons team bevestigt beschikbaarheid, alle kosten, afhaling of levering en de planning. Je gaat pas akkoord nadat je het volledige aanbod hebt ontvangen. Daarna ontvang je de afspraken en voorwaarden in een vorm die je kunt bewaren.</p><p>Afhaling gebeurt op afspraak in de omgeving van {business.pickupArea}. Een voorkeursdatum is nog geen bevestigde afspraak. {business.delivery}</p></li>
+          <li><strong>Geef je voorkeur door</strong><p>Bij de opening kun je zonder account bestellen. Je geeft je naam en e-mailadres door, eventueel je telefoonnummer en je gewenste afhaalmoment.</p></li>
+          <li><strong>We spreken eerst alles af</strong><p>Ons team bevestigt beschikbaarheid, alle kosten, de afhaalafspraak en de planning. Je gaat pas akkoord nadat je het volledige aanbod hebt ontvangen. Daarna ontvang je de afspraken en voorwaarden in een vorm die je kunt bewaren.</p><p>Afhaling gebeurt op afspraak in de omgeving van {business.pickupArea}. Een voorkeursdatum is nog geen bevestigde afspraak. {business.delivery}</p></li>
           <li><strong>Daarna maken we je bestelling</strong><p>We starten pas na de bevestigingsstap. Alles is handgemaakt op bestelling. {business.productionTime}</p></li>
-          <li><strong>Betaal bij afhaling of levering</strong><p>{business.payment} De beschikbare elektronische methode spreken we vooraf af. Er is geen online betaling.</p></li>
+          <li><strong>Betaal bij afhaling</strong><p>{business.payment} De beschikbare elektronische methode spreken we vooraf af. Er is geen online betaling.</p></li>
         </ol>
         <div className="notice"><strong>De webshop is nog in voorbereiding.</strong><p>De producten en prijzen zijn bevestigd. Je kunt je winkelmand samenstellen, maar het bestelformulier is nog niet actief. Er worden geen bestellingen of contactgegevens verstuurd en er worden geen automatische bevestigingsmails verzonden.</p></div>
         <CheckoutPreparation />
         <LocalRequestLink />
           {import.meta.env.MODE==='test-checkout'&&<div className="notice"><strong>TESTVERSIE — GEEN ECHTE BESTELLING</strong><p>Alleen goedgekeurde testers kunnen fictieve aanvragen registreren. Gebruik geen echte klantgegevens. Er volgt geen e-mail, betaling of productie.</p><a className="button button-primary" href="/test-bestellen">Aanmelden als tester</a></div>}
       </div>
-      <aside className="order-summary"><ShoppingBag size={24} aria-hidden="true" /><h2>{count ? 'Jouw selectie staat klaar' : 'Een kommetje kiezen?'}</h2><p>{count ? `${count} artikelen in je winkelmand.` : 'Bekijk onze collectie potjes en aperoschalen.'}</p>{count > 0 && <div className="summary-row summary-total"><span>Totaal producten</span><strong>{money(totalCents)}</strong></div>}<p className="summary-note">Eventuele leveringskosten zijn niet inbegrepen en worden in overleg bevestigd.</p><Link className="button button-primary w-full" to={count ? '/winkelmand' : '/collectie'}>{count ? 'Bekijk je winkelmand' : 'Ontdek de collectie'}<ArrowRight size={18} aria-hidden="true" /></Link><p className="summary-note">Bestelformulier nog niet beschikbaar. Er is nog niets besteld of betaald.</p></aside>
+      <aside className="order-summary"><ShoppingBag size={24} aria-hidden="true" /><h2>{count ? 'Jouw selectie staat klaar' : 'Een kommetje kiezen?'}</h2><p>{count ? `${count} artikelen in je winkelmand.` : 'Bekijk onze collectie potjes en aperoschalen.'}</p>{count > 0 && <div className="summary-row summary-total"><span>Totaal producten</span><strong>{money(totalCents)}</strong></div>}<p className="summary-note">Alleen afhaling op afspraak, zonder afhaalkosten. Geen online betaling.</p><Link className="button button-primary w-full" to={count ? '/winkelmand' : '/collectie'}>{count ? 'Bekijk je winkelmand' : 'Ontdek de collectie'}<ArrowRight size={18} aria-hidden="true" /></Link><p className="summary-note">Bestelformulier nog niet beschikbaar. Er is nog niets besteld of betaald.</p></aside>
     </div>
   </div>;
 }
@@ -51,9 +51,9 @@ export function Contact() {
       <h2>E-mail</h2>
       {business.publicContactEmail ? <p><a className="text-link" href={`mailto:${business.publicContactEmail}`}>{business.publicContactEmail}</a></p> : <p>Ons openbare e-mailadres wordt nog bevestigd.</p>}
       <h2>Afhalen in Brugge</h2><p>Afhaling in de omgeving van {business.pickupArea}. De exacte locatie en datum spreken we met je af. Een gevraagde voorkeursdatum moet eerst door ons team bevestigd worden.</p>
-      <h2>Lokale levering</h2><p>{business.delivery}</p>
+      <h2>Alleen afhaling op afspraak</h2><p>{business.delivery}</p>
       <h2>Productie & betaling</h2><p>{business.productionTime} {business.payment}</p>
-      <Link className="text-link" to="/bestellen">Lees hoe bestellen zal werken <ArrowRight size={17} aria-hidden="true" /></Link>
+      <Link className="text-link" to="/bestellen">Zo werkt een bestelaanvraag <ArrowRight size={17} aria-hidden="true" /></Link>
     </div>
   </div>;
 }

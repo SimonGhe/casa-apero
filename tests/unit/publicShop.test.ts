@@ -2,6 +2,7 @@ import {beforeEach,afterEach,it,expect,vi} from 'vitest';
 import {readFile,readdir} from 'node:fs/promises';
 import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import shop from '../../worker/public-shop';
+import {legalVersion} from '../../src/data/legal';
 import type {ShopEnv} from '../../worker/public-shop';
 let mf:Miniflare,env:ShopEnv;
 beforeEach(async()=>{
@@ -13,7 +14,7 @@ beforeEach(async()=>{
  const db=await mf.getD1Database('DB');for(const file of (await readdir('migrations')).filter(n=>/^\d.*\.sql$/.test(n)).sort())await db.exec((await readFile('migrations/'+file,'utf8')).split('\n').filter(l=>!l.trim().startsWith('--')).join(' '));
  await db.exec((await readFile('production/initialize.sql','utf8')).split('\n').filter(l=>!l.trim().startsWith('--')).join(' '));
  await db.exec("UPDATE application_settings SET value='false' WHERE key='orders_paused';");
- env={DB:db as unknown as D1Database,APP_ENV:'public-shop',PUBLIC_ORDERS_ENABLED:'true',LEGAL_VERSION:'Concept 0.2 · 28 oktober 2026',TURNSTILE_MODE:'siteverify',TURNSTILE_SITE_KEY:'0x-local-fixture',TURNSTILE_SECRET_KEY:'fixture-only-secret'};
+ env={DB:db as unknown as D1Database,APP_ENV:'public-shop',PUBLIC_ORDERS_ENABLED:'true',LEGAL_VERSION:legalVersion,TURNSTILE_MODE:'siteverify',TURNSTILE_SITE_KEY:'0x-local-fixture',TURNSTILE_SECRET_KEY:'fixture-only-secret'};
 });
 afterEach(async()=>{vi.unstubAllGlobals();await mf.dispose();});
 const payload=(extra={})=>({name:'Fictieve klant',email:'fictional@example.test',phone:'',notes:'Alleen lokale test',requestedDate:'',arrangement:'pickup',items:[{productId:'olive',variantId:'olive-standard',quantity:2}],acknowledged:true,testDataOnly:false,expectedSubtotalCents:1398,receiptToken:crypto.randomUUID().replaceAll('-','').repeat(2),turnstileToken:'local-transport-fixture',...extra});
@@ -32,7 +33,7 @@ it('accepts a non-binding request with draft information and records its actual 
  const response=await request('requests',payload(),{},{LEGAL_VERSION:''});
  expect(response.status).toBe(201);
  const row=await env.DB!.prepare('SELECT source,reference,legal_version,contract_status FROM orders').first();
- expect(row).toMatchObject({source:'web',legal_version:'Concept 0.2 · 28 oktober 2026',contract_status:'none'});
+ expect(row).toMatchObject({source:'web',legal_version:legalVersion,contract_status:'none'});
  expect(row!.reference).toMatch(/^CA-/);
  expect(await env.DB!.prepare('SELECT COUNT(*) AS n FROM financial_events').first('n')).toBe(0);
 });

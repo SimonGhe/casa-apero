@@ -10,7 +10,7 @@ async function selectAndFill(page: import('@playwright/test').Page) {
   await page.getByLabel('Naam', { exact: true }).fill('Fictieve Testklant');
   await page.getByLabel('E-mailadres', { exact: true }).fill('browser@example.invalid');
   await page.getByLabel('Telefoonnummer (optioneel)').fill('+32 470 00 00 00');
-  await page.getByLabel('Afhaling of levering').selectOption('delivery');
+  await page.getByLabel('Afhaling').selectOption('pickup');
   await page.getByLabel('Voorkeursdatum (optioneel)').fill('2028-12-01');
   await page.getByLabel('Opmerkingen (optioneel)').fill('Synthetische browserdemonstratie; niet uitvoeren.');
   await page.getByRole('checkbox', { name: /informatie gelezen/ }).check();
@@ -76,11 +76,11 @@ test('reloading after a lost success response recovers the receipt without submi
  await page.reload();await expect(page.getByTestId('order-reference')).toHaveText(reference);expect(posts).toBe(1);
  expect(await page.evaluate(()=>sessionStorage.getItem('casa-apero.local-attempt'))).toBeNull();
 });
-test('requires an explicit pickup or delivery preference before submitting',async({page})=>{
+test('requires an explicit pickup preference before submitting',async({page})=>{
  await page.goto('/product/olive');await page.getByRole('button',{name:'In winkelmand',exact:true}).click();await page.goto('/bestellen/lokaal');
  await page.getByLabel('Naam',{exact:true}).fill('Fictieve Voorkeurtest');await page.getByLabel('E-mailadres',{exact:true}).fill('preference@example.invalid');
  await page.getByRole('checkbox',{name:/informatie gelezen/}).check();await page.getByRole('checkbox',{name:/uitsluitend fictieve/}).check();
- await page.getByRole('button',{name:'Vrijblijvende testaanvraag versturen',exact:true}).click();await expect(page.getByLabel('Afhaling of levering')).toBeFocused();
+ await page.getByRole('button',{name:'Vrijblijvende testaanvraag versturen',exact:true}).click();await expect(page.getByLabel('Afhaling')).toBeFocused();
 });
 test('a changed price requires checking the updated quote and acknowledging again',async({page})=>{
  await selectAndFill(page);

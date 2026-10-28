@@ -1,4 +1,4 @@
-export const legalVersion = 'Concept 0.2 · 28 oktober 2026';
+export const legalVersion = 'Concept 0.3 · 29 oktober 2026';
 
 export const legalPages = [
   { path: '/algemene-voorwaarden', title: 'Algemene voorwaarden' },
