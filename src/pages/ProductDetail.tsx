@@ -45,7 +45,7 @@ function ProductView({ product }: { product: Product }) {
     <div className="product-detail">
       <div className="product-gallery">
         <ProductPhoto key={photoIndex} photo={product.images[photoIndex]} eager />
-        <div className="gallery-thumbnails" role="group" aria-label="Productbeelden">{product.images.map((photo, index) => <button type="button" key={index} aria-label={`Bekijk ${photo.isPlaceholder ? 'sfeerbeeld' : 'productfoto'} ${index + 1}`} aria-pressed={photoIndex === index} onClick={() => setPhotoIndex(index)}><ProductPhoto photo={photo} /></button>)}{hasPlaceholderImages && <p>Illustratieve uitsneden van het bestaande sfeerbeeld.<br />Echte productfoto's volgen nog.</p>}</div>
+        <div className="gallery-thumbnails" role="group" aria-label="Productbeelden">{product.images.map((photo, index) => <button type="button" key={index} aria-label={`Bekijk ${photo.isPlaceholder ? 'sfeerbeeld' : 'productfoto'} ${index + 1}`} aria-pressed={photoIndex === index} onClick={() => setPhotoIndex(index)}><ProductPhoto photo={photo} sizes="70px" /></button>)}{hasPlaceholderImages && <p>Illustratieve uitsneden van het bestaande sfeerbeeld.<br />Echte productfoto's volgen nog.</p>}</div>
       </div>
       <div className="product-detail-copy">
         <p className="eyebrow">{product.typeLabel}</p><h1 className="detail-title">{product.name}</h1>

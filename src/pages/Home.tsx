@@ -29,7 +29,7 @@ export function Home() {
         <div><p className="eyebrow">Voor op jouw tafel</p><h2>Een kom vol karakter.</h2></div>
         <Link className="text-link" to="/collectie">Bekijk de hele collectie <ArrowRight size={17} aria-hidden="true" /></Link>
       </div>
-      <p className="collection-note">Onze handgemaakte collectie, gemaakt op bestelling. De getoonde sfeerbeelden zijn tijdelijk; eigen productfoto's volgen nog.</p>
+      <p className="collection-note">Onze handgemaakte collectie, gemaakt op bestelling. Ontdek de producten op onze eigen foto's; elk handgemaakt stuk is uniek.</p>
       <div className="product-grid">{products.slice(0, 3).map((product) => <ProductCard key={product.id} product={product} />)}</div>
     </section>
 

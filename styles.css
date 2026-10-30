@@ -103,6 +103,8 @@ main:focus { outline: none; }
 .product-image-link { display: block; position: relative; overflow: hidden; background: var(--cream); }
 .product-photo { position: relative; aspect-ratio: 1 / 1.06; overflow: hidden; background: #e2d5c0; isolation: isolate; }
 .product-photo > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: filter .3s; }
+.product-photo-official { background: #eee6da; }
+.product-photo-official > img { object-fit: contain; }
 .crop-table > img { transform: scale(2.1); transform-origin: 45% 68%; }
 .crop-bowls > img { object-position: 100% 50%; transform: scale(3.2); transform-origin: 99% 69%; }
 .crop-platter > img { transform: scale(2.7); transform-origin: 63% 73%; }

@@ -9,16 +9,24 @@
       "typeLabel": "Klein potje met groene binnenkant",
       "images": [
         {
-          "src": "/assets/market-stand.png",
-          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
-          "crop": "bowls",
-          "isPlaceholder": true
+          "src": "/assets/products/olive-01.webp",
+          "alt": "Olive, klein keramieken kommetje met groene binnenkant",
+          "isPlaceholder": false
         },
         {
-          "src": "/assets/market-stand.png",
-          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
-          "crop": "table",
-          "isPlaceholder": true
+          "src": "/assets/products/olive-02.webp",
+          "alt": "Groene Olive-kommen naast elkaar, met beide formaten in beeld",
+          "isPlaceholder": false
+        },
+        {
+          "src": "/assets/products/olive-03.webp",
+          "alt": "Groene Olive-kommen van bovenaf, met beide formaten in beeld",
+          "isPlaceholder": false
+        },
+        {
+          "src": "/assets/products/olive-04.webp",
+          "alt": "Volledig tafelbeeld van de groene Olive-kommen in twee formaten",
+          "isPlaceholder": false
         }
       ],
       "variants": [
@@ -40,16 +48,24 @@
       "typeLabel": "Klein beige potje",
       "images": [
         {
-          "src": "/assets/market-stand.png",
-          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
-          "crop": "detail",
-          "isPlaceholder": true
+          "src": "/assets/products/dune-mini-01.webp",
+          "alt": "Dune Mini, klein beige keramieken kommetje van bovenaf",
+          "isPlaceholder": false
         },
         {
-          "src": "/assets/market-stand.png",
-          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
-          "crop": "bowls",
-          "isPlaceholder": true
+          "src": "/assets/products/dune-mini-02.webp",
+          "alt": "Detail van een beige Dune Mini-kommetje",
+          "isPlaceholder": false
+        },
+        {
+          "src": "/assets/products/dune-mini-03.webp",
+          "alt": "Beige kommetjes uit de Dune Mini-fotoreeks naast elkaar",
+          "isPlaceholder": false
+        },
+        {
+          "src": "/assets/products/dune-mini-04.webp",
+          "alt": "Volledig tafelbeeld met beige kommetjes uit de Dune Mini-fotoreeks",
+          "isPlaceholder": false
         }
       ],
       "variants": [
@@ -71,16 +87,19 @@
       "typeLabel": "Groot beige potje",
       "images": [
         {
-          "src": "/assets/market-stand.png",
-          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
-          "crop": "table",
-          "isPlaceholder": true
+          "src": "/assets/products/dune-grand-01.webp",
+          "alt": "Dune Grand, grote beige keramieken kom met gespikkeld glazuur",
+          "isPlaceholder": false
         },
         {
-          "src": "/assets/market-stand.png",
-          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
-          "crop": "detail",
-          "isPlaceholder": true
+          "src": "/assets/products/dune-grand-02.webp",
+          "alt": "Twee Dune Grand-kommen van bovenaf",
+          "isPlaceholder": false
+        },
+        {
+          "src": "/assets/products/dune-grand-03.webp",
+          "alt": "Dune Grand-kommen op een tafel met houten serveerplank",
+          "isPlaceholder": false
         }
       ],
       "variants": [
@@ -102,16 +121,29 @@
       "typeLabel": "Keramieken aperoschaal",
       "images": [
         {
-          "src": "/assets/market-stand.png",
-          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
-          "crop": "platter",
-          "isPlaceholder": true
+          "src": "/assets/products/aperitivo-01.webp",
+          "alt": "Aperitivo, handgemaakte keramieken aperoschaal van bovenaf",
+          "isPlaceholder": false
         },
         {
-          "src": "/assets/market-stand.png",
-          "alt": "Tijdelijk beeld uit het oorspronkelijke Casa Apero sfeerbeeld. Geen foto van dit product; echte productfoto volgt.",
-          "crop": "table",
-          "isPlaceholder": true
+          "src": "/assets/products/aperitivo-02.webp",
+          "alt": "Aperitivo gevuld met kaas, salami en aperohapjes",
+          "isPlaceholder": false
+        },
+        {
+          "src": "/assets/products/aperitivo-03.webp",
+          "alt": "Twee afgewerkte Aperitivo-schalen op een gedekte tafel",
+          "isPlaceholder": false
+        },
+        {
+          "src": "/assets/products/aperitivo-04.webp",
+          "alt": "Detail van de glazuur en vakjes van Aperitivo",
+          "isPlaceholder": false
+        },
+        {
+          "src": "/assets/products/aperitivo-05.webp",
+          "alt": "Aperitivo-schalen bij warme sfeerverlichting",
+          "isPlaceholder": false
         }
       ],
       "variants": [

@@ -18,7 +18,7 @@ export function Catalogue() {
   return <div className="content-width page-space">
     <p className="eyebrow">Handgemaakt op bestelling</p><h1 className="page-title">De collectie</h1>
     <p className="page-intro">Handgemaakte potjes en aperoschalen voor een tafel vol gezelligheid. Ontdek onze actuele collectie hieronder.</p>
-    <p className="notice">De producten en prijzen zijn bevestigd. De getoonde beelden zijn tijdelijke sfeerbeelden; echte productfoto's volgen nog. Bestellen via deze voorvertoning is nog niet mogelijk.</p>
+    <p className="notice">De foto's tonen onze eigen handgemaakte producten. Kleine verschillen in vorm, kleur en glazuur horen bij handwerk. Op sommige foto's zie je meerdere stukken samen.</p>
     <div className="catalogue-toolbar">
       <div className="segmented-control" role="group" aria-label="Filter op productsoort">{['Alles', 'Kommetjes', 'Aperoschalen'].map((value) => <button type="button" key={value} aria-pressed={category === value} onClick={() => setCategory(value)}>{value}</button>)}</div>
       <div className="catalogue-controls">

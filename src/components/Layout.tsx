@@ -63,7 +63,7 @@ export function Layout() {
         <div><h2>Goed om te weten</h2><Link to="/contact">Contact</Link><Link to="/privacy">Privacy</Link>{business.publicContactEmail && <a href={`mailto:${business.publicContactEmail}`}>{business.publicContactEmail}</a>}<p>Alleen afhaling op afspraak.<br />Ongeveer 2 weken productie na bevestiging (schatting).<br />Betalen bij afhaling.</p></div>
       </div>
       <div className="content-width"><LegalNavigation /></div>
-      <div className="footer-bottom content-width"><span>Casa Apero</span><span>{import.meta.env.MODE==='shop'?'Handgemaakte keramiek':import.meta.env.MODE === 'staging' ? 'Testversie' : 'Lokale voorvertoning'} · productfoto's volgen</span><span>Met zorg gemaakt.</span></div>
+      <div className="footer-bottom content-width"><span>Casa Apero</span><span>{import.meta.env.MODE==='shop'?'Handgemaakte keramiek':import.meta.env.MODE === 'staging' ? 'Testversie' : 'Lokale voorvertoning'}</span><span>Met zorg gemaakt.</span></div>
     </footer>
   </>;
 }

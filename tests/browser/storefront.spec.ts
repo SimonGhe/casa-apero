@@ -113,9 +113,9 @@ test('official products show confirmed prices without invented variants', async 
     await expect(page.getByRole('radio')).toHaveCount(0);
     await expect(page.locator('.production-note')).toContainText('ongeveer 2 weken');
     await expect(page.getByRole('button', { name: 'In winkelmand', exact: true })).toBeEnabled();
-    await page.getByRole('button', { name: 'Bekijk sfeerbeeld 2' }).click();
-    await expect(page.getByRole('button', { name: 'Bekijk sfeerbeeld 2' })).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('.product-gallery > .product-photo .photo-label')).toContainText('productfoto volgt');
+    await page.getByRole('button', { name: 'Bekijk productfoto 2' }).click();
+    await expect(page.getByRole('button', { name: 'Bekijk productfoto 2' })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.product-gallery > .product-photo .photo-label')).toHaveCount(0);
   }
 });
 

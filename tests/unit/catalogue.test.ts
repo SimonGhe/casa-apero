@@ -25,7 +25,8 @@ it('projects the confirmed seeded products and exposes no private columns',async
 it('uses admin edits immediately for storefront product information and authoritative quotes',async()=>{
  const adminOrigin='http://127.0.0.1:5180',env={DB:db,APP_ENV:'local-admin',ADMIN_AUTH_MODE:'local-session'};
  const login=await admin.fetch(new Request(adminOrigin+'/api/admin/local-login',{method:'POST',headers:{Origin:adminOrigin}}),env);const cookie=login.headers.get('Set-Cookie')!.split(';')[0];
- const update=await admin.fetch(new Request(adminOrigin+'/api/admin/products/olive',{method:'PUT',headers:{Origin:adminOrigin,Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify({version:0,name:'Olive test',description:'Fictieve nieuwe producttekst',priceCents:799,costCents:200,productionDays:21,paused:false,published:true})}),env);expect(update.status).toBe(200);
+ const productVersion=await db.prepare("SELECT version FROM products WHERE id='olive'").first<number>('version');
+ const update=await admin.fetch(new Request(adminOrigin+'/api/admin/products/olive',{method:'PUT',headers:{Origin:adminOrigin,Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify({version:productVersion,name:'Olive test',description:'Fictieve nieuwe producttekst',priceCents:799,costCents:200,productionDays:21,paused:false,published:true})}),env);expect(update.status).toBe(200);
  const data=await(await catalogue()).json();expect(data.products[0]).toMatchObject({name:'Olive test',description:'Fictieve nieuwe producttekst',estimatedProductionDays:21,variants:[{priceCents:799}]});
  expect(await(await quote()).json()).toMatchObject({subtotalCents:1598});
  await db.exec("UPDATE products SET published=0 WHERE id='olive';");expect((await(await catalogue()).json()).products).toHaveLength(3);expect((await quote()).status).toBe(400);

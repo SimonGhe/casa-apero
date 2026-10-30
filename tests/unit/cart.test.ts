@@ -76,7 +76,7 @@ describe('official catalogue', () => {
       expect(product.variants[0].colour).toBeUndefined();
       expect(product.estimatedProductionDays).toBe(14);
       expect(product.images.length).toBeGreaterThan(1);
-      expect(product.images.every((photo) => photo.isPlaceholder)).toBe(true);
+      expect(product.images.every((photo) => !photo.isPlaceholder)).toBe(true);
     }
     expect(leadTime(14)).toContain('ongeveer 2 weken');
   });

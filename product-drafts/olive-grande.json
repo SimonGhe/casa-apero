@@ -1,0 +1,23 @@
+{
+  "id": "olive-grande",
+  "name": "Olive Grande",
+  "status": "draft",
+  "published": false,
+  "ordersPaused": true,
+  "priceCents": null,
+  "description": null,
+  "category": "Kommetjes",
+  "images": [
+    {
+      "src": "/assets/products/olive-grande-01.webp",
+      "alt": "Olive Grande, grotere groene keramieken kom",
+      "isPlaceholder": false
+    }
+  ],
+  "requiredBeforePublication": [
+    "Bevestigde prijs",
+    "Bevestigde productbeschrijving en afmetingen",
+    "Bevestiging dat de grotere kom op de foto Olive Grande is"
+  ],
+  "note": "Voorbereiding buiten de verkoopcatalogus. Geen D1-productrij, variant of bestelbare prijs; geen wijziging aan de bestaande vier producten."
+}
